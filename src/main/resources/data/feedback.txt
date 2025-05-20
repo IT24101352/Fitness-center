@@ -1,0 +1,3 @@
+FDBK747C67|MEMD4FD0E|Nimal Kumara|false|general|General|4|Excellent service so far, looking forward to being part of the community.|2025-05-15T23:12:59.5221691|APPROVED|Approved by admin.|true
+FDBKBF39CA|MEM0302F8|Anjali Fernando|false|facility|Facility|5|The gym equipment is modern and well-maintained. Really enjoying my workouts here ❤️|2025-05-15T23:19:55.8960043|APPROVED|Approved by admin.|true
+FDBKCD2F01|MEM272F7D|Kavindu Prasath|false|class|HIIT Blast on Tuesday|3|Great class! The instructor was motivating and the workout was effective.|2025-05-15T23:23:59.5036663|APPROVED|Approved by admin.|true

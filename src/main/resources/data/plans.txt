@@ -1,0 +1,4 @@
+PLAN001|Basic Access|4500.0|Monthly|Full gym equipment access,Standard locker rooms & showers,Online workout tracker|active
+PLAN002|Premium Plus|6000.0|Monthly|All Basic features,Unlimited group classes,1 FREE PT consultation,2 guest passes/month,Premium locker rooms|active
+PLAN003|Family Pack|9000.0|Monthly|All Premium Plus benefits for 2 adults,Access for 2 children,Family events,Childcare services|active
+PLAN004|Student Special|3999.0|Monthly (Term-time)|Gym access during off-peak hours,Valid student ID required|inactive

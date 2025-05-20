@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin: Billing Dashboard - Fitness Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+    .accent-text { color: #A3E635; }
+    .sidebar { background-color: #1F2937; color: #e5e7eb; }
+    .sidebar a { transition: background-color 0.2s ease, color 0.2s ease; border-left: 3px solid transparent; }
+    .sidebar a:hover, .sidebar a.active { background-color: #374151; color: #A3E635; border-left-color: #A3E635; }
+    .table-header { background-color: #111827; color: white; }
+    .table-cell { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+    .stat-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 1.5rem; }
+    .stat-card-icon { background-color: #A3E635; color: #1F2937; border-radius: 50%; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; border-radius: 0.375rem; cursor:pointer; }
+    .btn-primary-admin { background-color: #A3E635; color: #1F2937; font-weight: 600; }
+    .btn-primary-admin:hover { background-color: #82c000; }
+    .status-paid { background-color: #D1FAE5; color: #065F46; }
+    .status-pending { background-color: #FEF3C7; color: #92400E; }
+    .status-overdue { background-color: #FEE2E2; color: #991B1B; }
+    .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500; font-size: 0.75rem; text-transform: capitalize;}
+  </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+  <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+  <nav>
+    <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+    <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+    <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+    <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+    <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+    <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+    <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+    <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+    <a id="logoutLinkSidebar" href="../index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+  </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+    <div>
+      <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+      <h1 class="text-xl font-semibold text-gray-700 ml-2">Billing Dashboard</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span class="text-gray-600">Admin</span>
+      <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-gray-800">Financial Overview</h2>
+      <div>
+        <button id="updateOverdueBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out text-sm mr-2">
+          <i class="fas fa-sync-alt mr-2"></i>Update Overdue
+        </button>
+        <button id="generateInvoiceBtn" class="btn-primary-admin py-2 px-4 rounded-md transition duration-150 ease-in-out text-sm">
+          <i class="fas fa-plus mr-2"></i>Generate New Invoice
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500 uppercase">Total Revenue (Month)</p>
+            <p class="text-3xl font-bold text-gray-800" id="totalRevenue">$0.00</p>
+          </div>
+          <div class="stat-card-icon"><i class="fas fa-dollar-sign"></i></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500 uppercase">Pending Payments</p>
+            <p class="text-3xl font-bold text-gray-800" id="pendingPaymentsCount">0</p>
+          </div>
+          <div class="stat-card-icon"><i class="fas fa-hourglass-half"></i></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500 uppercase">Overdue Invoices</p>
+            <p class="text-3xl font-bold text-red-500" id="overdueInvoicesCount">0</p>
+          </div>
+          <div class="stat-card-icon !bg-red-500 text-white"><i class="fas fa-exclamation-triangle"></i></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500 uppercase">New Subscriptions (Month)</p>
+            <p class="text-3xl font-bold text-gray-800" id="newSubscriptions">0</p>
+          </div>
+          <div class="stat-card-icon"><i class="fas fa-user-plus"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Recent Transactions / Invoices</h3>
+      <div class="bg-white p-4 rounded-lg shadow mb-4">
+        <input type="text" id="transactionSearch" placeholder="Search by Invoice ID, Member Name, Plan..." class="w-full p-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500 text-sm">
+      </div>
+      <div class="bg-white shadow-xl rounded-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="table-header">
+          <tr>
+            <th class="table-cell text-left">Invoice ID</th>
+            <th class="table-cell text-left">Member Name</th>
+            <th class="table-cell text-left">Date</th>
+            <th class="table-cell text-right">Amount</th>
+            <th class="table-cell text-center">Status</th>
+            <th class="table-cell text-center">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200" id="transactionsTableBody">
+          </tbody>
+        </table>
+      </div>
+      <p id="noTransactionsMessage" class="text-center text-gray-500 mt-8 py-4 hidden">No transactions found for the current view.</p>
+    </div>
+
+
+    <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+      <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+    </footer>
+  </main>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+  <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+  <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+    <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fas fa-times fa-lg"></i></button>
+    <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+    <nav>
+      <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+      <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+      <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+      <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+      <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+      <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+      <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+      <a href="#settings" class="block py-2.5 px-4 rounded"><i class="fas fa-cog mr-2"></i>Settings</a> <a id="mobileLogoutLinkSidebar" href="../index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+  </aside>
+</div>
+
+<script>
+  // API Base URL
+  const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if needed
+
+  let authToken = null;
+  let allTransactionsData = [];
+  let revenueChartInstance = null;
+
+  // DOM Elements
+  const totalRevenueEl = document.getElementById('totalRevenue');
+  const pendingPaymentsCountEl = document.getElementById('pendingPaymentsCount');
+  const overdueInvoicesCountEl = document.getElementById('overdueInvoicesCount');
+  const newSubscriptionsEl = document.getElementById('newSubscriptions');
+  const transactionsTableBody = document.getElementById('transactionsTableBody');
+  const noTransactionsMessage = document.getElementById('noTransactionsMessage');
+  const transactionSearchInput = document.getElementById('transactionSearch');
+  const generateInvoiceBtn = document.getElementById('generateInvoiceBtn');
+  const updateOverdueBtn = document.getElementById('updateOverdueBtn');
+
+
+  function checkAdminLoginAndLoadBilling() {
+      authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+      if (!authToken || userRole !== 'ADMIN') {
+          alert('Access Denied. Admin privileges required. Redirecting to login...');
+          localStorage.clear(); sessionStorage.clear();
+          window.location.href = '../login.html';
+          return;
+      }
+      const welcomeSpan = document.querySelector('header div.flex.items-center.space-x-4 > span.text-gray-600');
+      const adminName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Admin';
+      if (welcomeSpan) welcomeSpan.textContent = `Welcome, ${adminName.split(' ')[0]}!`;
+
+      fetchBillingData();
+  }
+
+  async function fetchBillingData(showUpdatedMessage = false) {
+      if (!authToken) return;
+      if (transactionsTableBody) transactionsTableBody.innerHTML = `<tr><td colspan="6" class="table-cell text-center">Loading transactions...</td></tr>`;
+      if (noTransactionsMessage) noTransactionsMessage.classList.add('hidden');
+
+      if (showUpdatedMessage) {
+          alert("Overdue statuses updated. Refreshing data...");
+      }
+
+      try {
+          const response = await fetch(`${API_BASE_URL}/payments`, {
+              headers: { 'X-Auth-Token': authToken }
+          });
+          if (!response.ok) {
+               if (response.status === 401 || response.status === 403) {
+                   alert('Session expired or invalid. Please log in again.');
+                   window.location.href = '../login.html';
+              }
+              throw new Error(`Failed to fetch payments: ${response.statusText}`);
+          }
+          allTransactionsData = await response.json();
+          filterAndRenderTransactions();
+          updateDashboardStats();
+          renderRevenueChart();
+
+      } catch (error) {
+          console.error('Error fetching billing data:', error);
+          if (noTransactionsMessage) {
+              noTransactionsMessage.textContent = `Could not load transactions. ${error.message}`;
+              noTransactionsMessage.classList.remove('hidden');
+          }
+          if (transactionsTableBody) transactionsTableBody.innerHTML = `<tr><td colspan="6" class="table-cell text-center text-red-500">Error loading transactions.</td></tr>`;
+          updateDashboardStats(); // Update with empty data
+          renderRevenueChart();   // Update with empty data
+      }
+  }
+
+  function filterAndRenderTransactions() {
+      const searchTerm = transactionSearchInput ? transactionSearchInput.value.toLowerCase() : "";
+      let filteredData = allTransactionsData;
+
+      if (searchTerm) {
+          filteredData = allTransactionsData.filter(inv => {
+              return (inv.paymentId && inv.paymentId.toLowerCase().includes(searchTerm)) ||
+                     (inv.memberName && inv.memberName.toLowerCase().includes(searchTerm)) ||
+                     (inv.description && inv.description.toLowerCase().includes(searchTerm)) ||
+                     (inv.planName && inv.planName.toLowerCase().includes(searchTerm));
+          });
+      }
+      renderTransactionsTable(filteredData);
+  }
+
+
+  function renderTransactionsTable(invoicesToRender) {
+      if(!transactionsTableBody) return;
+      transactionsTableBody.innerHTML = '';
+
+      if (invoicesToRender.length === 0) {
+          if(noTransactionsMessage) {
+              noTransactionsMessage.textContent = 'No transactions found for the current view.';
+              noTransactionsMessage.classList.remove('hidden');
+          }
+      } else {
+          if(noTransactionsMessage) noTransactionsMessage.classList.add('hidden');
+      }
+
+      invoicesToRender.forEach(invoice => {
+          let statusBadgeClass = '';
+          switch (invoice.status.toLowerCase()) {
+              case 'paid': statusBadgeClass = 'status-paid'; break;
+              case 'pending': statusBadgeClass = 'status-pending'; break;
+              case 'overdue': statusBadgeClass = 'status-overdue'; break;
+              default: statusBadgeClass = 'bg-gray-200 text-gray-700';
+          }
+
+          let displayDate = invoice.paymentDate || invoice.issueDate;
+          try { displayDate = new Date(displayDate).toLocaleDateString('en-CA'); } catch(e) {}
+
+
+          const row = `
+              <tr>
+                  <td class="table-cell text-gray-900">${invoice.paymentId}</td>
+                  <td class="table-cell font-medium text-gray-900">${invoice.memberName}</td>
+                  <td class="table-cell text-gray-500">${displayDate}</td>
+                  <td class="table-cell text-right text-gray-900 font-semibold">Rs.${invoice.amount.toFixed(2)}</td>
+                  <td class="table-cell text-center"><span class="status-badge ${statusBadgeClass}">${invoice.status}</span></td>
+                  <td class="table-cell text-center space-x-1">
+                      <button class="btn-sm bg-blue-500 hover:bg-blue-600 text-white" title="View Details" onclick="viewInvoiceDetails('${invoice.paymentId}')"><i class="fas fa-eye"></i></button>
+                      ${(invoice.status.toLowerCase() === 'pending' || invoice.status.toLowerCase() === 'overdue') ? `<button class="btn-sm bg-green-500 hover:bg-green-600 text-white" title="Mark as Paid" onclick="markAsPaid('${invoice.paymentId}', ${invoice.amount})"><i class="fas fa-check-circle"></i></button>` : ''}
+                      ${invoice.status.toLowerCase() === 'overdue' ? `<button class="btn-sm bg-yellow-500 hover:bg-yellow-600 text-white" title="Send Reminder" onclick="sendReminder('${invoice.paymentId}')"><i class="fas fa-bell"></i></button>` : ''}
+                      <button class="btn-sm bg-red-500 hover:bg-red-600 text-white" title="Delete Invoice" onclick="deleteInvoice('${invoice.paymentId}')"><i class="fas fa-trash-alt"></i></button>
+                  </td>
+              </tr>
+          `;
+          transactionsTableBody.innerHTML += row;
+      });
+  }
+
+  function updateDashboardStats() {
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+
+      const monthlyRevenue = allTransactionsData
+          .filter(inv => inv.status.toLowerCase() === 'paid' &&
+                         inv.paymentDate && // Ensure paymentDate exists for revenue calculation
+                         new Date(inv.paymentDate).getMonth() === currentMonth &&
+                         new Date(inv.paymentDate).getFullYear() === currentYear)
+          .reduce((sum, inv) => sum + inv.amount, 0);
+      if(totalRevenueEl) totalRevenueEl.textContent = `Rs.${monthlyRevenue.toFixed(2)}`;
+
+      const pendingCount = allTransactionsData.filter(inv => inv.status.toLowerCase() === 'pending').length;
+      if(pendingPaymentsCountEl) pendingPaymentsCountEl.textContent = pendingCount;
+
+      const overdueCount = allTransactionsData.filter(inv => inv.status.toLowerCase() === 'overdue').length;
+      if(overdueInvoicesCountEl) overdueInvoicesCountEl.textContent = overdueCount;
+
+      const newSubsThisMonth = new Set(allTransactionsData
+          .filter(inv => inv.status.toLowerCase() === 'paid' &&
+                         (inv.description || '').toLowerCase().includes('membership') &&
+                         inv.paymentDate &&
+                         new Date(inv.paymentDate).getMonth() === currentMonth &&
+                         new Date(inv.paymentDate).getFullYear() === currentYear)
+          .map(inv => inv.memberId)
+      ).size;
+      if(newSubscriptionsEl) newSubscriptionsEl.textContent = newSubsThisMonth;
+  }
+
+  function renderRevenueChart() {
+      const canvas = document.getElementById('revenueChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if(!ctx) return;
+
+      const monthlyData = {};
+      allTransactionsData.filter(inv => inv.status.toLowerCase() === 'paid' && inv.paymentDate).forEach(inv => {
+          try {
+              const monthYear = new Date(inv.paymentDate).toISOString().substring(0, 7);
+              monthlyData[monthYear] = (monthlyData[monthYear] || 0) + inv.amount;
+          } catch(e) { console.warn("Could not parse paymentDate for chart:", inv.paymentDate); }
+      });
+
+      const sortedMonths = Object.keys(monthlyData).sort();
+      const chartLabels = sortedMonths.map(my => {
+          const [year, month] = my.split('-');
+          return new Date(parseInt(year), parseInt(month) -1).toLocaleString('default', {month: 'short', year: '2-digit'});
+      });
+      const chartDataPoints = sortedMonths.map(my => monthlyData[my]);
+
+      if (revenueChartInstance) revenueChartInstance.destroy();
+      revenueChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: chartLabels.slice(-12),
+              datasets: [{
+                  label: 'Monthly Revenue ($)',
+                  data: chartDataPoints.slice(-12),
+                  backgroundColor: 'rgba(163, 230, 53, 0.6)',
+                  borderColor: '#A3E635',
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false, // Important
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      ticks: { callback: value => '$' + value }
+                  }
+              }
+          }
+      });
+  }
+
+  if(transactionSearchInput) transactionSearchInput.addEventListener('input', filterAndRenderTransactions);
+
+  window.viewInvoiceDetails = (paymentId) => { /* Keep existing viewInvoiceDetails */
+      const invoice = allTransactionsData.find(inv => inv.paymentId === paymentId);
+      if(invoice){
+          alert(`Invoice Details (Mock):\nID: ${invoice.paymentId}\nMember: ${invoice.memberName}\nAmount: $${invoice.amount.toFixed(2)}\nStatus: ${invoice.status}\nDescription: ${invoice.description}`);
+      }
+  };
+  window.markAsPaid = async (paymentId, amount) => { /* Keep existing markAsPaid */
+       if (!confirm(`Mark invoice ${paymentId} as PAID? Amount: $${amount.toFixed(2)}`)) return;
+      try {
+          const response = await fetch(`${API_BASE_URL}/payments/${paymentId}/pay`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Auth-Token': authToken },
+              body: JSON.stringify({ paymentMethod: "ADMIN_MANUAL_PAID", paymentAmount: amount })
+          });
+          if (response.ok) {
+              alert(`Invoice ${paymentId} marked as Paid.`);
+              fetchBillingData();
+          } else {
+              const errorText = await response.text();
+              alert(`Failed to mark as paid: ${errorText || response.statusText}`);
+          }
+      } catch (error) {
+          console.error("Error marking as paid:", error);
+          alert("An error occurred.");
+      }
+  };
+  window.sendReminder = (paymentId) => { alert(`Sending payment reminder for Invoice ${paymentId}. (Mock)`); };
+  window.deleteInvoice = async (paymentId) => { /* Keep existing deleteInvoice */
+      if (!confirm(`Are you sure you want to delete invoice ${paymentId}?`)) return;
+       try {
+          const response = await fetch(`${API_BASE_URL}/payments/${paymentId}`, {
+              method: 'DELETE',
+              headers: { 'X-Auth-Token': authToken }
+          });
+          if (response.ok) {
+              alert(`Invoice ${paymentId} deleted successfully.`);
+              fetchBillingData();
+          } else {
+              const errorText = await response.text();
+              alert(`Failed to delete invoice: ${errorText || response.statusText}`);
+          }
+      } catch (error) {
+          console.error("Error deleting invoice:", error);
+          alert("An error occurred while deleting the invoice.");
+      }
+  };
+
+  if(generateInvoiceBtn){
+      generateInvoiceBtn.addEventListener('click', () => {
+          const memberId = prompt("Enter Member ID for new invoice (e.g., MEM001):");
+          const planId = prompt("Enter Plan ID for invoice (e.g., PLAN001):"); // Or allow custom description/amount
+          const description = prompt("Enter invoice description (e.g., Monthly Dues - June):", `Membership Dues`);
+          const amountStr = prompt("Enter amount (leave blank to use plan price):");
+
+          if (memberId && planId) { // Plan ID is important to fetch plan details like price if amount not given
+              const amount = amountStr ? parseFloat(amountStr) : 0; // 0 means use plan price
+              if (isNaN(amount)) {
+                  alert("Invalid amount."); return;
+              }
+              generateNewInvoiceAdmin(memberId.trim(), planId.trim(), description, amount);
+          } else if (memberId && !planId && description && amountStr) { // Manual invoice without plan
+               const amount = parseFloat(amountStr);
+               if (isNaN(amount) || amount <= 0) {
+                  alert("Invalid amount for manual invoice."); return;
+              }
+               generateNewInvoiceAdmin(memberId.trim(), null, description, amount);
+          }
+          else {
+              alert("Invoice generation cancelled or missing Member ID/Plan ID.");
+          }
+      });
+  }
+
+  async function generateNewInvoiceAdmin(memberId, planId, description, amount) {
+      const payload = {
+          memberId,
+          planId, // Can be null if amount and description are provided
+          description,
+          amount, // If 0, backend service should use plan price
+          currency: "USD",
+          dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      };
+      if (!planId && (amount <=0 || !description)) {
+          alert("For manual invoice without a plan, description and a positive amount are required.");
+          return;
+      }
+
+
+      try {
+          const response = await fetch(`${API_BASE_URL}/payments/generate-invoice`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Auth-Token': authToken },
+              body: JSON.stringify(payload)
+          });
+          if (response.ok) {
+              alert("New invoice generated successfully!");
+              fetchBillingData();
+          } else {
+              const errorText = await response.text();
+              alert(`Failed to generate invoice: ${errorText || response.statusText}`);
+          }
+      } catch (error) {
+          console.error("Error generating invoice:", error);
+          alert("An error occurred while generating the invoice.");
+      }
+  }
+
+  if(updateOverdueBtn) {
+      updateOverdueBtn.addEventListener('click', async () => {
+          updateOverdueBtn.disabled = true;
+          updateOverdueBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+          try {
+              const response = await fetch(`${API_BASE_URL}/payments/update-overdue`, {
+                  method: 'POST',
+                  headers: { 'X-Auth-Token': authToken }
+              });
+              if (response.ok) {
+                  fetchBillingData(true); // Pass true to show "updated" message
+              } else {
+                  const errorText = await response.text();
+                  alert(`Failed to update overdue statuses: ${errorText || response.statusText}`);
+              }
+          } catch (error) {
+              console.error("Error updating overdue statuses:", error);
+              alert("An error occurred.");
+          } finally {
+              updateOverdueBtn.disabled = false;
+              updateOverdueBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Update Overdue';
+          }
+      });
+  }
+
+
+  // Sidebar Toggle & common elements
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const mobileSidebar = document.getElementById('mobileSidebar');
+  const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+  const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+  if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+      sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+      mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+      closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+  }
+  const currentYearElement = document.getElementById('currentYear');
+  if (currentYearElement) currentYearElement.textContent = new Date().getFullYear();
+
+  const logoutLinkSidebar = document.getElementById('logoutLinkSidebar');
+  const mobileLogoutLinkSidebar = document.getElementById('mobileLogoutLinkSidebar');
+  function handleLogout(e) {
+      e.preventDefault(); localStorage.clear(); sessionStorage.clear(); window.location.href = '../login.html';
+  }
+  if(logoutLinkSidebar) logoutLinkSidebar.addEventListener('click', handleLogout);
+  if(mobileLogoutLinkSidebar) mobileLogoutLinkSidebar.addEventListener('click', handleLogout);
+
+  window.addEventListener('DOMContentLoaded', checkAdminLoginAndLoadBilling);
+</script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice History - Fitness Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .accent-text { color: #A3E635; }
+    .btn-primary { background-color: #A3E635; color: #111827; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: background-color 0.3s ease; font-size: 0.875rem; }
+    .btn-primary:hover { background-color: #82c000; }
+    .btn-secondary { background-color: #6B7280; color: #FFFFFF; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; }
+    .btn-secondary:hover { background-color: #4B5563; }
+    .dashboard-nav a { display: block; padding: 0.75rem 1rem; border-radius: 0.375rem; color: #374151; transition: background-color 0.2s ease, color 0.2s ease; }
+    .dashboard-nav a:hover { background-color: #e5e7eb; color: #111827; }
+    .dashboard-nav a.active { background-color: #A3E635; color: #111827; font-weight: 600; }
+    .table-header { background-color: #1F2937; color: white; }
+    .table-cell { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+    .status-paid { background-color: #D1FAE5; color: #065F46; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500; }
+    .status-pending { background-color: #FEF3C7; color: #92400E; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500; }
+    .status-overdue { background-color: #FEE2E2; color: #991B1B; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="text-2xl font-bold text-gray-800"><a href="../index.html">Fitness <span class="accent-text">Center</span></a></div>
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="../index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+        <a href="../schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+        <a href="member_dashboard.html" class="text-gray-700 hover:text-lime-500 font-semibold">My Dashboard</a>
+      </nav>
+      <div class="flex items-center space-x-3">
+        <span class="hidden sm:inline text-gray-700">Welcome, Jane!</span> <a href="../index.html" class="btn-secondary text-sm sm:text-base !px-3 !py-1.5">Logout</a>
+      </div>
+      <div class="md:hidden"><button id="mobile-menu-button" class="text-gray-800 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button></div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden mt-3">
+      <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+      <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+      <a href="member_dashboard.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded font-semibold">My Dashboard</a>
+      <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</a>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-16">
+  <div class="md:flex md:space-x-8">
+    <aside class="md:w-1/4 mb-8 md:mb-0">
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Member Menu</h3>
+        <nav class="dashboard-nav space-y-1">
+          <a href="member_dashboard.html"><i class="fas fa-tachometer-alt mr-2 w-5 text-center"></i>Overview</a>
+          <a href="member_profile_update.html"><i class="fas fa-user-edit mr-2 w-5 text-center"></i>Update Profile</a>
+          <a href="member_booked_classes.html"><i class="fas fa-calendar-check mr-2 w-5 text-center"></i>My Bookings</a>
+          <a href="member_membership_details.html"><i class="fas fa-id-card mr-2 w-5 text-center"></i>Membership</a>
+          <a href="member_payment_history.html" class="active"><i class="fas fa-history mr-2 w-5 text-center"></i>Billing & Payments</a>
+          <a href="member_upgrade_downgrade.html"><i class="fas fa-level-up-alt mr-2 w-5 text-center"></i>Change Plan</a>
+          <a href="member_feedback_form.html"><i class="fas fa-comment-dots mr-2 w-5 text-center"></i>Submit Feedback</a>
+
+        </nav>
+      </div>
+      <a href="member_payment_portal.html" class="mt-6 inline-block btn-primary w-full text-center">
+        <i class="fas fa-credit-card mr-2"></i>Make a Payment
+      </a>
+    </aside>
+
+    <section class="md:w-3/4">
+      <div class="bg-white p-8 md:p-10 rounded-xl shadow-2xl">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-8">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+              Invoice <span class="accent-text">History</span>
+            </h1>
+            <p class="mt-2 text-gray-600">Review your past payments and download invoices.</p>
+          </div>
+          <select id="yearFilter" class="form-input mt-4 sm:mt-0 sm:w-auto text-sm py-2">
+            <option value="all">All Years</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="table-header">
+            <tr>
+              <th scope="col" class="table-cell text-left uppercase tracking-wider">Invoice ID</th>
+              <th scope="col" class="table-cell text-left uppercase tracking-wider">Date Issued</th>
+              <th scope="col" class="table-cell text-left uppercase tracking-wider">Description</th>
+              <th scope="col" class="table-cell text-right uppercase tracking-wider">Amount</th>
+              <th scope="col" class="table-cell text-center uppercase tracking-wider">Status</th>
+              <th scope="col" class="table-cell text-center uppercase tracking-wider">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="invoiceTableBody">
+            </tbody>
+          </table>
+        </div>
+        <p id="noInvoicesMessage" class="text-center text-gray-500 mt-8 py-4 hidden">No invoices found for the selected period.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+  <div class="container mx-auto px-6 text-center">
+    <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // API Base URL
+  const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if needed
+
+  // DOM Elements
+  const invoiceTableBody = document.getElementById('invoiceTableBody');
+  const noInvoicesMessage = document.getElementById('noInvoicesMessage');
+  const yearFilter = document.getElementById('yearFilter'); // Assuming you keep this filter
+
+  let currentMemberId = null;
+  let authToken = null;
+  let allMemberInvoices = []; // To store fetched invoices for client-side filtering by year
+
+  function checkLoginStatusAndLoadHistory() {
+      authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      currentMemberId = localStorage.getItem('memberId') || sessionStorage.getItem('memberId');
+
+      if (!authToken || !currentMemberId) {
+          alert('You must be logged in to view payment history. Redirecting to login...');
+          window.location.href = '../login.html'; // Adjust path
+          return;
+      }
+      fetchPaymentHistory();
+  }
+
+  async function fetchPaymentHistory() {
+      if (!currentMemberId || !authToken) return;
+
+      try {
+          const response = await fetch(`${API_BASE_URL}/payments/member/${currentMemberId}`, {
+              headers: { 'X-Auth-Token': authToken }
+          });
+          if (!response.ok) {
+               if (response.status === 401 || response.status === 403) {
+                   alert('Session expired or invalid. Please log in again.');
+                   window.location.href = '../login.html';
+              }
+              throw new Error(`Failed to fetch payment history: ${response.statusText}`);
+          }
+          allMemberInvoices = await response.json();
+          filterAndRenderInvoices(); // Initial render
+      } catch (error) {
+          console.error('Error fetching payment history:', error);
+          if (noInvoicesMessage) {
+              noInvoicesMessage.textContent = `Could not load payment history. ${error.message}`;
+              noInvoicesMessage.classList.remove('hidden');
+          }
+          if (invoiceTableBody) invoiceTableBody.innerHTML = '';
+      }
+  }
+
+  function filterAndRenderInvoices() {
+      const selectedYear = yearFilter ? yearFilter.value : "all";
+      let invoicesToRender = allMemberInvoices;
+
+      if (selectedYear !== "all") {
+          invoicesToRender = allMemberInvoices.filter(invoice => {
+              // Assuming invoice.issueDate or invoice.paymentDate is in YYYY-MM-DD format
+              const invoiceDate = invoice.paymentDate || invoice.issueDate;
+              return invoiceDate && invoiceDate.startsWith(selectedYear);
+          });
+      }
+      renderInvoices(invoicesToRender);
+  }
+
+
+  function renderInvoices(invoicesToRender) {
+      if(!invoiceTableBody || !noInvoicesMessage) return;
+      invoiceTableBody.innerHTML = '';
+
+      if (invoicesToRender.length === 0) {
+          noInvoicesMessage.textContent = 'No invoices found for the selected period.';
+          noInvoicesMessage.classList.remove('hidden');
+      } else {
+          noInvoicesMessage.classList.add('hidden');
+      }
+
+      invoicesToRender.forEach(invoice => {
+          let statusBadgeClass = '';
+          switch (invoice.status.toLowerCase()) {
+              case 'paid': statusBadgeClass = 'status-paid'; break;
+              case 'pending': statusBadgeClass = 'status-pending'; break;
+              case 'overdue': statusBadgeClass = 'status-overdue'; break;
+              case 'cancelled': statusBadgeClass = 'bg-gray-200 text-gray-700'; break; // Example for cancelled
+              default: statusBadgeClass = 'bg-yellow-100 text-yellow-800'; // Default for other statuses
+          }
+
+          let displayDate = invoice.paymentDate || invoice.issueDate; // Prefer payment date if available
+          try {
+              displayDate = new Date(displayDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          } catch(e) { /* keep original if parsing fails */ }
+
+
+          const row = `
+              <tr>
+                  <td class="table-cell text-gray-900">${invoice.paymentId}</td>
+                  <td class="table-cell text-gray-500">${displayDate}</td>
+                  <td class="table-cell text-gray-500">${invoice.description || invoice.planName || 'N/A'}</td>
+                  <td class="table-cell text-right text-gray-900 font-medium">Rs.${invoice.amount.toFixed(2)}</td>
+                  <td class="table-cell text-center"><span class="${statusBadgeClass} text-xs">${invoice.status}</span></td>
+                  <td class="table-cell text-center">
+                      <button onclick="viewInvoiceDetails('${invoice.paymentId}')" class="text-lime-600 hover:text-lime-700" title="View Details (mock)">
+                          <i class="fas fa-eye fa-lg"></i>
+                      </button>
+                      </td>
+              </tr>
+          `;
+          invoiceTableBody.innerHTML += row;
+      });
+  }
+
+  function viewInvoiceDetails(paymentId) {
+      // In a real app, this might open a modal with more details or navigate to a specific invoice page.
+      const invoice = allMemberInvoices.find(inv => inv.paymentId === paymentId);
+      if (invoice) {
+          alert(`Invoice Details (Mock):\nID: ${invoice.paymentId}\nMember: ${invoice.memberName}\nAmount: Rs.${invoice.amount.toFixed(2)}\nStatus: ${invoice.status}\nDescription: ${invoice.description}\nIssued: ${invoice.issueDate}\nPaid: ${invoice.paymentDate || 'N/A'}`);
+      } else {
+          alert("Invoice details not found.");
+      }
+  }
+
+  if(yearFilter) {
+      // Populate year filter dynamically if needed, or keep static options
+      // For now, assuming static options are fine.
+      yearFilter.addEventListener('change', filterAndRenderInvoices);
+  }
+
+  // Mobile menu toggle
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  }
+
+  const currentYearElement = document.getElementById('currentYear');
+  if (currentYearElement) {
+      currentYearElement.textContent = new Date().getFullYear();
+  }
+
+  // Welcome message & Logout (Shared logic, ideally in a common script)
+  const welcomeSpan = document.querySelector('header span.text-gray-700');
+  if (welcomeSpan) {
+      const userName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName');
+      if (userName) welcomeSpan.textContent = `Welcome, ${userName.split(' ')[0]}!`;
+  }
+  const logoutButton = document.querySelector('header a.btn-secondary');
+  if (logoutButton && logoutButton.textContent.toLowerCase() === 'logout') {
+      logoutButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.clear(); sessionStorage.clear();
+          window.location.href = '../login.html'; // Adjust path
+      });
+  }
+
+  window.addEventListener('DOMContentLoaded', checkLoginStatusAndLoadHistory);
+</script>
+</body>
+</html>

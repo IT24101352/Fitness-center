@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Membership Payment - Fitness Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .accent-text { color: #A3E635; }
+    .btn-primary { background-color: #A3E635; color: #111827; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; cursor: pointer; }
+    .btn-primary:hover { background-color: #82c000; }
+    .btn-primary:disabled { background-color: #9ca3af; cursor: not-allowed;}
+    .btn-secondary { background-color: #6B7280; color: #FFFFFF; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; }
+    .form-input { border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.75rem 1rem; width: 100%; }
+    .payment-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 2rem; }
+    .message-container div, .message-container p { margin-top: 1rem; padding: 0.75rem; border-radius: 0.375rem; }
+    .message-container .text-red-500 { background-color: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; }
+    .message-container .text-green-500 { background-color: #d1fae5; border: 1px solid #a7f3d0; color: #047857; }
+    .message-container .text-blue-500 { background-color: #dbeafe; border: 1px solid #bfdbfe; color: #1d4ed8; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="text-2xl font-bold text-gray-800">
+        <a href="../index.html">Fitness <span class="accent-text">Center</span></a>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span id="headerUserGreeting" class="hidden sm:inline text-gray-700">Finalizing Registration...</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-16 flex items-center justify-center">
+  <div class="max-w-lg w-full">
+    <div id="paymentPortalSection" class="payment-card">
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+          Complete Your <span class="accent-text">Membership Payment</span>
+        </h1>
+        <p class="mt-2 text-gray-600">This is the final step to activate your account.</p>
+      </div>
+
+      <div id="invoiceDetails" class="mb-8 p-6 bg-lime-50 border border-lime-300 rounded-lg hidden">
+        <h2 class="text-lg font-semibold text-lime-800 mb-2">Payment Due:</h2>
+        <p class="text-3xl font-bold text-lime-700" id="dueAmount">$0.00</p>
+        <p class="text-sm text-lime-600 mt-1" id="invoiceDescription">For your selected membership.</p>
+      </div>
+      <p id="errorMessage" class="text-center text-red-500 bg-red-100 p-3 rounded-md hidden">Error loading payment details.</p>
+
+      <form id="paymentForm" class="space-y-6 mt-6 hidden">
+        <input type="hidden" id="invoiceIdToPay" name="invoiceIdToPay">
+        <input type="hidden" id="memberIdForPayment" name="memberIdForPayment"> <div>
+        <label for="paymentAmountDisplay" class="form-label">Amount to Pay (USD)</label>
+        <input type="text" id="paymentAmountDisplay" class="form-input bg-gray-100" value="$0.00" readonly>
+      </div>
+
+        <div>
+          <label for="paymentMethodMock" class="form-label">Payment Method (Mock)</label>
+          <select id="paymentMethodMock" name="paymentMethodMock" class="form-input">
+            <option value="CREDIT_CARD_MOCK">Credit Card (Simulated)</option>
+            <option value="PAYPAL_MOCK">PayPal (Simulated)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">This is a simulated payment. No actual card details required.</p>
+        </div>
+
+
+        <div class="pt-4">
+          <button type="submit" id="submitPaymentBtn" class="btn-primary w-full text-lg">
+            <i class="fas fa-credit-card mr-2"></i>Confirm & Pay $<span id="payButtonAmount">0.00</span>
+          </button>
+        </div>
+      </form>
+      <div id="paymentMessage" class="message-container mt-6 text-center"></div>
+    </div>
+
+    <div id="paymentConfirmationSection" class="payment-card hidden mt-8 text-center">
+      <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+      <h2 class="text-2xl font-bold text-gray-800 mb-3">Payment Successful!</h2>
+      <p class="text-gray-600 mb-2">Thank you! Your membership is now active.</p>
+      <p class="text-gray-600 mb-6">You will be redirected to the login page shortly to access your account.</p>
+      <a href="../login.html" class="btn-primary">Login Now</a>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+  <div class="container mx-auto px-6 text-center">
+    <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+  const API_BASE_URL = 'http://localhost:8080/api';
+
+  const invoiceDetailsDiv = document.getElementById('invoiceDetails');
+  const dueAmountEl = document.getElementById('dueAmount');
+  const invoiceDescriptionEl = document.getElementById('invoiceDescription');
+  const errorMessageEl = document.getElementById('errorMessage');
+  const paymentForm = document.getElementById('paymentForm');
+  const paymentAmountDisplayInput = document.getElementById('paymentAmountDisplay');
+  const payButtonAmountSpan = document.getElementById('payButtonAmount');
+  const submitPaymentBtn = document.getElementById('submitPaymentBtn');
+  const invoiceIdToPayInput = document.getElementById('invoiceIdToPay');
+  const memberIdForPaymentInput = document.getElementById('memberIdForPayment');
+  const paymentMessage = document.getElementById('paymentMessage');
+  const paymentPortalSection = document.getElementById('paymentPortalSection');
+  const paymentConfirmationSection = document.getElementById('paymentConfirmationSection');
+  // const headerUserGreetingEl = document.getElementById('headerUserGreeting'); // If you want to greet by name
+
+  let currentInvoiceId = null;
+  let currentInvoiceAmount = 0;
+  let currentMemberId = null; // Retrieved from URL
+
+  async function loadInvoiceForPayment() {
+      const urlParams = new URLSearchParams(window.location.search);
+      currentInvoiceId = urlParams.get('invoiceId');
+      currentMemberId = urlParams.get('memberId'); // Get memberId from URL
+
+      if (!currentInvoiceId || !currentMemberId) {
+          showError("Invalid payment link. Registration details (invoiceId or memberId) are missing. Please try registering again or contact support.");
+          return;
+      }
+
+      invoiceIdToPayInput.value = currentInvoiceId;
+      memberIdForPaymentInput.value = currentMemberId;
+
+      // Optional: Fetch member name for greeting if needed, but not essential for payment.
+      // if(headerUserGreetingEl && currentMemberId) {
+      //    try {
+      //        const memberRes = await fetch(`${API_BASE_URL}/members/${currentMemberId}`); // No auth token needed here ideally
+      //        if(memberRes.ok) {
+      //           const memberData = await memberRes.json();
+      //           headerUserGreetingEl.textContent = `Welcome, ${memberData.fullName.split(' ')[0]}! Finalize Registration...`;
+      //        }
+      //    } catch(e) { console.warn("Could not fetch member name for greeting"); }
+      // }
+
+
+      paymentMessage.innerHTML = '<p class="text-blue-500">Loading payment details...</p>';
+
+      try {
+          // Fetch the specific invoice using its ID
+          // This endpoint must be accessible without full login token if user is just redirected from registration.
+          const response = await fetch(`${API_BASE_URL}/payments/${currentInvoiceId}`);
+
+          if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`Could not load invoice (ID: ${currentInvoiceId}): ${errorText || response.statusText}`);
+          }
+          const invoice = await response.json();
+
+          // Security check: Verify the invoice belongs to the memberId passed in URL
+          if (invoice.memberId !== currentMemberId) {
+              throw new Error("Invoice mismatch. The provided invoice does not belong to this registration session. Please contact support.");
+          }
+
+          if (invoice.status.toUpperCase() === "PAID") {
+              showError("This invoice has already been paid. If your account is not active, please contact support. Redirecting to login...");
+              setTimeout(() => { window.location.href = '../login.html'; }, 4000);
+              return;
+          }
+          if (invoice.status.toUpperCase() !== "PENDING" && invoice.status.toUpperCase() !== "OVERDUE") {
+              showError(`This invoice (Status: ${invoice.status}) cannot be paid at this time. Please contact support if you believe this is an error.`);
+              return;
+          }
+
+          currentInvoiceAmount = invoice.amount;
+          dueAmountEl.textContent = `Rs.${invoice.amount.toFixed(2)}`;
+          invoiceDescriptionEl.textContent = invoice.description || `For ${invoice.planName || 'Your New Membership'}`;
+          paymentAmountDisplayInput.value = `Rs.${invoice.amount.toFixed(2)}`;
+          payButtonAmountSpan.textContent = invoice.amount.toFixed(2);
+
+          invoiceDetailsDiv.classList.remove('hidden');
+          paymentForm.classList.remove('hidden');
+          errorMessageEl.classList.add('hidden');
+          paymentMessage.innerHTML = ''; // Clear loading message
+
+      } catch (error) {
+          console.error("Error loading invoice:", error);
+          showError(error.message || "Could not load invoice details. Please ensure the link is correct or contact support.");
+      }
+  }
+
+  function showError(message) {
+      errorMessageEl.textContent = message;
+      errorMessageEl.classList.remove('hidden');
+      invoiceDetailsDiv.classList.add('hidden');
+      paymentForm.classList.add('hidden');
+      if (paymentMessage) paymentMessage.innerHTML = ''; // Clear other messages
+  }
+
+  paymentForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      paymentMessage.innerHTML = '';
+      if (!currentInvoiceId || currentInvoiceAmount <= 0) {
+          paymentMessage.innerHTML = '<p class="text-red-500">Error: No valid invoice selected for payment. Please try registering again.</p>';
+          return;
+      }
+
+      submitPaymentBtn.disabled = true;
+      submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing Payment...';
+
+      // The paymentMethod is specific for initial registration for backend logic
+      const paymentMethodForBackend = "INITIAL_REGISTRATION_PAYMENT";
+
+      try {
+          // This endpoint should also not require a full login token if called immediately after registration.
+          // The backend validates based on invoiceId and memberId.
+          const response = await fetch(`${API_BASE_URL}/payments/${currentInvoiceId}/pay`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  paymentMethod: paymentMethodForBackend,
+                  paymentAmount: currentInvoiceAmount,
+                  memberId: currentMemberId // Ensure memberId is sent for account activation logic
+              })
+          });
+
+          if (response.ok) {
+              paymentPortalSection.classList.add('hidden');
+              paymentConfirmationSection.classList.remove('hidden');
+              // User is now expected to log in, so no token storage here.
+              setTimeout(() => {
+                  window.location.href = '../login.html'; // Redirect to login page after successful payment
+              }, 3500);
+          } else {
+              const errorText = await response.text();
+              paymentMessage.innerHTML = `<p class="text-red-500">Payment failed: ${errorText || response.statusText}. Please try again or contact support.</p>`;
+              submitPaymentBtn.disabled = false;
+              submitPaymentBtn.innerHTML = `<i class="fas fa-credit-card mr-2"></i>Confirm & Pay $<span id="payButtonAmount">${currentInvoiceAmount.toFixed(2)}</span>`;
+          }
+      } catch (error) {
+          console.error("Payment submission error:", error);
+          paymentMessage.innerHTML = '<p class="text-red-500">An error occurred while processing your payment. Please check your internet connection and try again.</p>';
+          submitPaymentBtn.disabled = false;
+          submitPaymentBtn.innerHTML = `<i class="fas fa-credit-card mr-2"></i>Confirm & Pay $<span id="payButtonAmount">${currentInvoiceAmount.toFixed(2)}</span>`;
+      }
+  });
+
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+  window.addEventListener('DOMContentLoaded', loadInvoiceForPayment);
+</script>
+</body>
+</html>
