@@ -3,7 +3,7 @@ package com.PGN12.fitness_center_app.controller;
 import com.PGN12.fitness_center_app.model.Payment;
 import com.PGN12.fitness_center_app.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+// import org.springframework.format.annotation.DateTimeFormat; // Not used in current generate-invoice
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * REST Controller for managing Payments and Billing.
- */
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
@@ -28,24 +25,24 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    /**
-     * Generates a new invoice (Admin operation).
-     * Expects memberId, planId, description, amount, currency, dueDate in payload.
-     * Endpoint: POST /api/payments/generate-invoice
-     */
     @PostMapping("/generate-invoice")
     public ResponseEntity<?> generateInvoice(@RequestBody Map<String, String> payload) {
         try {
             String memberId = payload.get("memberId");
-            String planId = payload.get("planId");
+            String planId = payload.get("planId"); // Can be null for manual non-plan invoices
             String description = payload.get("description");
             double amount = Double.parseDouble(payload.getOrDefault("amount", "0"));
             String currency = payload.getOrDefault("currency", "USD");
             LocalDate dueDate = payload.containsKey("dueDate") ? LocalDate.parse(payload.get("dueDate"), DateTimeFormatter.ISO_LOCAL_DATE) : null;
 
-            if (memberId == null || planId == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("memberId and planId are required.");
+            // If planId is not provided, ensure amount and description are.
+            if ( (planId == null || planId.trim().isEmpty()) && (amount <= 0 || description == null || description.trim().isEmpty()) ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("For non-plan based invoices, amount and description are required.");
             }
+            if (memberId == null ) { // Plan ID is optional for manual invoices, but member ID is not
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("memberId is required.");
+            }
+
 
             Payment invoice = paymentService.generateInvoice(memberId, planId, description, amount, currency, dueDate);
             return new ResponseEntity<>(invoice, HttpStatus.CREATED);
@@ -57,11 +54,6 @@ public class PaymentController {
         }
     }
 
-    /**
-     * Processes a payment for a given invoice ID (Member operation from payment portal).
-     * Expects paymentMethod and paymentAmount.
-     * Endpoint: POST /api/payments/{paymentId}/pay
-     */
     @PostMapping("/{paymentId}/pay")
     public ResponseEntity<?> processPayment(@PathVariable String paymentId, @RequestBody Map<String, String> payload) {
         try {
@@ -85,12 +77,6 @@ public class PaymentController {
         }
     }
 
-
-    /**
-     * Retrieves all payment records (Admin view).
-     * Can be filtered by status.
-     * Endpoint: GET /api/payments
-     */
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments(
             @RequestParam(required = false) String memberId,
@@ -105,20 +91,12 @@ public class PaymentController {
         return ResponseEntity.ok(payments);
     }
 
-    /**
-     * Retrieves payment history for a specific member.
-     * Endpoint: GET /api/payments/member/{memberId}
-     */
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<Payment>> getPaymentsByMemberId(@PathVariable String memberId) {
         List<Payment> payments = paymentService.getPaymentsByMemberId(memberId);
         return ResponseEntity.ok(payments);
     }
 
-    /**
-     * Retrieves a specific payment/invoice by its ID.
-     * Endpoint: GET /api/payments/{paymentId}
-     */
     @GetMapping("/{paymentId}")
     public ResponseEntity<Payment> getPaymentById(@PathVariable String paymentId) {
         return paymentService.getPaymentById(paymentId)
@@ -126,10 +104,6 @@ public class PaymentController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Updates details of a payment/invoice (Admin operation).
-     * Endpoint: PUT /api/payments/{paymentId}
-     */
     @PutMapping("/{paymentId}")
     public ResponseEntity<?> updatePayment(@PathVariable String paymentId, @RequestBody Payment paymentDetails) {
         try {
@@ -142,10 +116,6 @@ public class PaymentController {
         }
     }
 
-    /**
-     * Deletes a payment/invoice record (Admin operation).
-     * Endpoint: DELETE /api/payments/{paymentId}
-     */
     @DeleteMapping("/{paymentId}")
     public ResponseEntity<?> deletePayment(@PathVariable String paymentId) {
         boolean deleted = paymentService.deletePayment(paymentId);
@@ -156,18 +126,32 @@ public class PaymentController {
         }
     }
 
-    /**
-     * Endpoint to trigger updating overdue payment statuses (Admin/Scheduled Task).
-     * Endpoint: POST /api/payments/update-overdue
-     */
     @PostMapping("/update-overdue")
     public ResponseEntity<String> updateOverduePayments() {
+        // Add Admin Role Check Here in a real app
         try {
             paymentService.updateOverduePayments();
             return ResponseEntity.ok("Overdue payment statuses updated successfully.");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating overdue payments: " + e.getMessage());
+        }
+    }
+
+    // Endpoint to manually trigger renewal invoice generation (for admin)
+    @PostMapping("/admin/trigger-renewals")
+    public ResponseEntity<String> triggerRenewalInvoiceGeneration(
+            @RequestParam(defaultValue = "15") int daysInAdvance) {
+        // IMPORTANT: Add security check to ensure only ADMIN can call this.
+        // This is a simplified example without Spring Security.
+        // In a real app: @PreAuthorize("hasRole('ADMIN')") or similar.
+        try {
+            paymentService.generateUpcomingRenewalInvoices(daysInAdvance);
+            return ResponseEntity.ok("Renewal invoice generation process triggered for members due in " + daysInAdvance + " days.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error triggering renewal invoice generation: " + e.getMessage());
         }
     }
 }
