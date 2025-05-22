@@ -29,5 +29,11 @@ public class Payment {
     private String paymentMethod; // e.g., "Credit Card", "PayPal", "Cash" (for recording, not processing)
     private String transactionNotes; // Any additional notes for the transaction
 
-
+// OOP Concepts:
+    // Encapsulation is handled by Lombok's @Data.
+    // Inheritance (CreditCardPayment, UPIPayment) as mentioned in your docs:
+    // While possible, for file-based storage, it adds complexity to parsing.
+    // A simpler approach for this project is to use the 'paymentMethod' field
+    // within this single Payment class. If actual payment processing logic were
+    // different per method, then inheritance would be more beneficial.
 }
