@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Light gray background */
+        }
+        .accent-text {
+            color: #A3E635; /* Lime Green */
+        }
+        .btn-primary {
+            background-color: #A3E635;
+            color: #111827; /* Dark text on lime button */
+            font-weight: 600;
+            padding: 0.6rem 1.2rem; /* Slightly smaller for table buttons */
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+            font-size: 0.875rem; /* text-sm */
+        }
+        .btn-primary:hover {
+            background-color: #82c000; /* Darker lime */
+        }
+        .table-header {
+            background-color: #1F2937; /* Dark Gray */
+            color: white;
+        }
+        .table-cell {
+            padding: 1rem 1.5rem; /* 16px 24px */
+            border-bottom: 1px solid #e5e7eb; /* Gray 200 */
+        }
+        .class-card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 50;
+            right: 0;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+        }
+        .dropdown-content a {
+            color: #1f2937;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            font-size: 0.875rem;
+        }
+        .dropdown-content a:hover {background-color: #e5e7eb;}
+        .dropdown:hover .dropdown-content {display: block;}
+        .profile-btn {
+            background-color: #A3E635;
+            color: #111827;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+        }
+        .profile-btn i { margin-left: 0.5rem; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                <a href="index.html">Fitness <span class="accent-text">Center</span></a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+                <a href="index.html#about" class="text-gray-700 hover:text-lime-500">About</a>
+                <a href="schedule.html" class="text-gray-700 hover:text-lime-500 font-semibold">Classes</a>
+                <a href="membership_plans.html" class="text-gray-700 hover:text-lime-500">Membership</a>
+                <a href="reviews.html" class="text-gray-700 hover:text-lime-500">Reviews</a>
+                <a href="index.html#contact" class="text-gray-700 hover:text-lime-500">Contact</a>
+            </nav>
+            <div id="userAuthSection" class="flex items-center space-x-3">
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base !px-4 !py-2">Join Now</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-3">
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+            <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded font-semibold">Classes</a>
+            <a href="membership_plans.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Membership</a>
+            <a href="reviews.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Reviews</a>
+            <a href="index.html#contact" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Contact</a>
+            <div id="mobileAuthLinks">
+                <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+                <a href="register.html" class="block py-2 px-4 text-sm text-lime-600 bg-lime-100 hover:bg-lime-200 rounded font-semibold">Join Now</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-20">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+            Our Class <span class="accent-text">Schedule</span>
+        </h1>
+        <p class="mt-3 text-gray-600 text-lg">Find your favorite classes and book your spot!</p>
+    </div>
+
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div>
+            <label for="dayFilter" class="sr-only">Filter by Day:</label>
+            <select id="dayFilter" name="dayFilter" class="form-input py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-lime-500 focus:border-lime-500 sm:text-sm">
+                <option value="all">All Days</option>
+                <option value="monday">Monday</option>
+                <option value="tuesday">Tuesday</option>
+                <option value="wednesday">Wednesday</option>
+                <option value="thursday">Thursday</option>
+                <option value="friday">Friday</option>
+                <option value="saturday">Saturday</option>
+                <option value="sunday">Sunday</option>
+            </select>
+        </div>
+        <div>
+            <label for="classTypeFilter" class="sr-only">Filter by Class Type:</label>
+            <select id="classTypeFilter" name="classTypeFilter" class="form-input py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-lime-500 focus:border-lime-500 sm:text-sm">
+                <option value="all">All Class Types</option>
+                <option value="yoga">Yoga</option>
+                <option value="hiit">HIIT</option>
+                <option value="cycling">Cycling</option>
+                <option value="strength">Strength Training</option>
+                <option value="zumba">Zumba</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="hidden md:block bg-white shadow-xl rounded-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="table-header">
+            <tr>
+                <th scope="col" class="table-cell text-left text-xs font-medium uppercase tracking-wider">Time</th>
+                <th scope="col" class="table-cell text-left text-xs font-medium uppercase tracking-wider">Class Name</th>
+                <th scope="col" class="table-cell text-left text-xs font-medium uppercase tracking-wider">Instructor</th>
+                <th scope="col" class="table-cell text-left text-xs font-medium uppercase tracking-wider">Duration</th>
+                <th scope="col" class="table-cell text-left text-xs font-medium uppercase tracking-wider">Spots Left</th>
+                <th scope="col" class="table-cell text-left text-xs font-medium uppercase tracking-wider">Action</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="scheduleTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="md:hidden space-y-6" id="scheduleCardContainer">
+    </div>
+    <p id="noClassesMessage" class="text-center text-gray-500 mt-8 hidden">No classes match your filter criteria.</p>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+    <div class="container mx-auto px-6 text-center">
+        <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Header Auth Elements
+    const userAuthSection = document.getElementById('userAuthSection');
+    const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+
+    // Page Specific Elements
+    const scheduleTableBody = document.getElementById('scheduleTableBody');
+    const scheduleCardContainer = document.getElementById('scheduleCardContainer');
+    const dayFilter = document.getElementById('dayFilter');
+    const classTypeFilter = document.getElementById('classTypeFilter');
+    const noClassesMessage = document.getElementById('noClassesMessage');
+
+    let allFetchedClasses = [];
+
+    // --- Header Authentication Logic ---
+    function updateHeaderNav() {
+        const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const fullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+        let desktopNavHTML = '';
+        let mobileNavHTML = '';
+
+        if (authToken && fullName) {
+            const firstName = fullName.split(' ')[0];
+            const dashboardLink = userRole === 'ADMIN' ? 'admin/admin_dashboard.html' : 'member/member_dashboard.html';
+            desktopNavHTML = `
+              <div class="dropdown">
+                  <button class="profile-btn text-sm sm:text-base">
+                      Welcome, ${firstName} <i class="fas fa-caret-down ml-1"></i>
+                  </button>
+                  <div class="dropdown-content">
+                      <a href="${dashboardLink}">My Dashboard</a>
+                      <a href="#" id="logoutButtonDesktop">Logout</a>
+                  </div>
+              </div>
+          `;
+            mobileNavHTML = `
+              <a href="${dashboardLink}" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">My Dashboard</a>
+              <a href="#" id="logoutButtonMobile" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</a>
+          `;
+        } else {
+            desktopNavHTML = `
+              <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+              <a href="register.html" class="btn-primary text-sm sm:text-base !px-4 !py-2">Join Now</a>
+          `;
+            mobileNavHTML = `
+              <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+              <a href="register.html" class="block py-2 px-4 text-sm text-lime-600 bg-lime-100 hover:bg-lime-200 rounded font-semibold">Join Now</a>
+          `;
+        }
+        if (userAuthSection) userAuthSection.innerHTML = desktopNavHTML;
+        if (mobileAuthLinks) mobileAuthLinks.innerHTML = mobileNavHTML;
+
+        const logoutDesktop = document.getElementById('logoutButtonDesktop');
+        if (logoutDesktop) logoutDesktop.addEventListener('click', performLogout);
+        const logoutMobile = document.getElementById('logoutButtonMobile');
+        if (logoutMobile) logoutMobile.addEventListener('click', performLogout);
+    }
+
+    function performLogout(e) {
+        e.preventDefault();
+        localStorage.clear(); sessionStorage.clear();
+        updateHeaderNav();
+        // On public pages like schedule, user might not need to be redirected immediately
+        // but booking actions will now require login.
+        // If on a member-only page, redirect:
+        // if (window.location.pathname.includes('/member/')) {
+        //     window.location.href = 'login.html';
+        // }
+    }
+
+    // --- Schedule Page Specific Logic ---
+    async function fetchClassesAndPopulateFilters() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/classes/active`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            allFetchedClasses = await response.json();
+
+            // Populate Class Type Filter dynamically (optional, if types vary a lot)
+            const types = [...new Set(allFetchedClasses.map(cls => cls.type.toLowerCase()))];
+            // Keep existing static options for types but you could add to them:
+            types.forEach(type => {
+                if (!Array.from(classTypeFilter.options).find(opt => opt.value === type)) {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                    classTypeFilter.appendChild(option);
+                }
+            });
+            filterAndRenderClasses();
+        } catch (error) {
+            console.error('Failed to fetch classes:', error);
+            if (noClassesMessage) {
+                noClassesMessage.textContent = 'Failed to load class schedule. Please try again later.';
+                noClassesMessage.classList.remove('hidden');
+            }
+            if (scheduleTableBody) scheduleTableBody.innerHTML = '';
+            if (scheduleCardContainer) scheduleCardContainer.innerHTML = '';
+        }
+    }
+
+    function renderSchedule(classesToDisplay) {
+        if (scheduleTableBody) scheduleTableBody.innerHTML = '';
+        if (scheduleCardContainer) scheduleCardContainer.innerHTML = '';
+        if (noClassesMessage) noClassesMessage.classList.add('hidden');
+
+        if (classesToDisplay.length === 0) {
+            if (noClassesMessage) noClassesMessage.classList.remove('hidden');
+            return;
+        }
+
+        classesToDisplay.forEach(cls => {
+            let displayTime = cls.time;
+            if (cls.time && cls.time.includes(':')) {
+                const [hours, minutes] = cls.time.split(':');
+                const h = parseInt(hours);
+                const suffix = h >= 12 ? 'PM' : 'AM';
+                const h12 = ((h + 11) % 12 + 1);
+                displayTime = `${String(h12).padStart(2, '0')}:${minutes} ${suffix}`;
+            }
+            const spotsLeft = cls.capacity - cls.bookedSpots;
+            const spotsText = spotsLeft > 0 ? `${spotsLeft} spot${spotsLeft > 1 ? 's' : ''}` : 'Full';
+            const spotsColor = spotsLeft <= 0 ? 'text-red-500 font-semibold' : (spotsLeft < 5 ? 'text-orange-500 font-semibold' : 'text-green-500');
+
+            // Desktop Table Row
+            if (scheduleTableBody) {
+                const row = `
+                  <tr>
+                      <td class="table-cell text-sm text-gray-900">${displayTime}</td>
+                      <td class="table-cell text-sm font-medium text-gray-900">${cls.name}</td>
+                      <td class="table-cell text-sm text-gray-500">${cls.instructor}</td>
+                      <td class="table-cell text-sm text-gray-500">${cls.duration}</td>
+                      <td class="table-cell text-sm ${spotsColor}">${spotsText}</td>
+                      <td class="table-cell">
+                          ${spotsLeft > 0 ? `<button class="btn-primary" onclick="handleBookClass('${cls.id}', '${cls.name}')">Book Now</button>` : '<span class="text-sm text-red-500 font-semibold">Full</span>'}
+                      </td>
+                  </tr>
+              `;
+                scheduleTableBody.innerHTML += row;
+            }
+
+            // Mobile Card
+            if (scheduleCardContainer) {
+                const card = `
+                  <div class="class-card bg-white p-6">
+                      <h3 class="text-xl font-bold text-gray-800 mb-1">${cls.name}</h3>
+                      <p class="text-sm text-gray-600 mb-1"><i class="fas fa-user mr-2 text-lime-500"></i>${cls.instructor}</p>
+                      <p class="text-sm text-gray-600 mb-1"><i class="fas fa-clock mr-2 text-lime-500"></i>${displayTime} (${cls.duration})</p>
+                      <p class="text-sm ${spotsColor} mb-3">
+                          <i class="fas fa-users mr-2 text-lime-500"></i>${spotsLeft > 0 ? spotsText + ' available' : 'Class Full'}
+                      </p>
+                      ${spotsLeft > 0 ? `<button class="btn-primary w-full" onclick="handleBookClass('${cls.id}', '${cls.name}')">Book Now</button>` : '<button class="w-full bg-gray-300 text-gray-600 py-2 px-4 rounded-md cursor-not-allowed" disabled>Class Full</button>'}
+                  </div>
+              `;
+                scheduleCardContainer.innerHTML += card;
+            }
+        });
+    }
+
+    function filterAndRenderClasses() {
+        const selectedDay = dayFilter ? dayFilter.value : 'all';
+        const selectedType = classTypeFilter ? classTypeFilter.value : 'all';
+        if (noClassesMessage) noClassesMessage.textContent = 'No classes match your filter criteria.';
+
+        const filtered = allFetchedClasses.filter(cls => {
+            const dayMatch = selectedDay === 'all' || cls.dayOfWeek.toLowerCase() === selectedDay.toLowerCase();
+            const typeMatch = selectedType === 'all' || cls.type.toLowerCase() === selectedType.toLowerCase();
+            return dayMatch && typeMatch && cls.status === 'active';
+        });
+        renderSchedule(filtered);
+    }
+
+    function isLoggedIn() {
+        return localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    }
+
+    function handleBookClass(classId, className) {
+        if (!isLoggedIn()) {
+            localStorage.setItem('intendedBookingClassId', classId);
+            // No need to store className if class_booking.html fetches it by ID
+            alert('You need to log in to book a class. Redirecting to login page...');
+            window.location.href = 'login.html'; // Assumes login.html is in the same directory
+        } else {
+            // Path to class_booking.html should be relative to the current page (schedule.html)
+            window.location.href = `member/class_booking.html?classId=${classId}`;
+        }
+    }
+
+    // Event listeners for filters
+    if (dayFilter) dayFilter.addEventListener('change', filterAndRenderClasses);
+    if (classTypeFilter) classTypeFilter.addEventListener('change', filterAndRenderClasses);
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+        });
+    }
+
+    // Set current year in footer
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+        updateHeaderNav();
+        fetchClassesAndPopulateFilters();
+    });
+</script>
+</body>
+</html>
