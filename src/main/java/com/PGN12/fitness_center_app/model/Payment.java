@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class Payment {
 
-    private String paymentId; // Unique ID for the payment/invoice (e.g., "INV001", "PAY001")
+    private String paymentId;// Unique ID for the payment/invoice (e.g., "INV001", "PAY001")
     private String memberId;
     private String memberName; // Denormalized for easier display
     private String planId; // ID of the membership plan this payment is for
