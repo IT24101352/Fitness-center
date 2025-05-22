@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Repository for Payment data, handles file-based storage in payments.txt.
- */
+
 @Repository
 public class PaymentRepository {
 
