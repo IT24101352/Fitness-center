@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Class - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+        .accent-text { color: #A3E635; }
+        .btn-primary { background-color: #A3E635; color: #111827; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; }
+        .btn-primary:hover { background-color: #82c000; }
+        .btn-secondary { background-color: #6B7280; color: #FFFFFF; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; }
+        .btn-secondary:hover { background-color: #4B5563; }
+        .dashboard-nav a { display: block; padding: 0.75rem 1rem; border-radius: 0.375rem; color: #374151; transition: background-color 0.2s ease, color 0.2s ease; }
+        .dashboard-nav a:hover { background-color: #e5e7eb; color: #111827; }
+        .dashboard-nav a.active { background-color: #A3E635; color: #111827; font-weight: 600; }
+        .details-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 2rem; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800"><a href="../index.html">Fitness <span class="accent-text">Center</span></a></div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="../index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+                <a href="../schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+                <a href="member_dashboard.html" class="text-gray-700 hover:text-lime-500 font-semibold">My Dashboard</a>
+            </nav>
+            <div class="flex items-center space-x-3">
+                <span class="hidden sm:inline text-gray-700">Welcome, Jane!</span> <a href="../index.html" class="btn-secondary text-sm sm:text-base !px-3 !py-1.5">Logout</a>
+            </div>
+            <div class="md:hidden"><button id="mobile-menu-button" class="text-gray-800 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button></div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-3">
+            <a href="../index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+            <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+            <a href="member_dashboard.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded font-semibold">My Dashboard</a>
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-16">
+    <div class="md:flex md:space-x-8">
+        <aside class="md:w-1/4 mb-8 md:mb-0">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Member Menu</h3>
+                <nav class="dashboard-nav space-y-1">
+                    <a href="member_dashboard.html"><i class="fas fa-tachometer-alt mr-2 w-5 text-center"></i>Overview</a>
+                    <a href="member_profile_update.html"><i class="fas fa-user-edit mr-2 w-5 text-center"></i>Update Profile</a>
+                    <a href="member_booked_classes.html" class="active"><i class="fas fa-calendar-check mr-2 w-5 text-center"></i>My Bookings</a>
+                    <a href="member_membership_details.html"><i class="fas fa-id-card mr-2 w-5 text-center"></i>Membership</a>
+                    <a href="member_payment_history.html"><i class="fas fa-history mr-2 w-5 text-center"></i>Payment History</a>
+                    <a href="member_upgrade_downgrade.html"><i class="fas fa-level-up-alt mr-2 w-5 text-center"></i>Change Plan</a>
+                </nav>
+            </div>
+            <a href="../schedule.html" class="mt-6 inline-block text-lime-600 hover:text-lime-700 font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Class Schedule
+            </a>
+        </aside>
+
+        <section class="md:w-3/4">
+            <div id="bookingDetailsSection" class="details-card">
+                <div class="mb-8">
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+                        Book Your <span class="accent-text">Class</span>
+                    </h1>
+                    <p class="mt-2 text-gray-600">Confirm the details below to secure your spot.</p>
+                </div>
+
+                <div id="classInfo" class="mb-8 p-6 bg-lime-50 border border-lime-200 rounded-lg">
+                    <h2 class="text-xl font-bold text-lime-700 mb-2" id="className">Loading class details...</h2>
+                    <p class="text-gray-700 mb-1"><i class="fas fa-user-tie mr-2 w-4 text-center text-lime-600"></i>Instructor: <span id="classInstructor">N/A</span></p>
+                    <p class="text-gray-700 mb-1"><i class="fas fa-calendar-day mr-2 w-4 text-center text-lime-600"></i>Day: <span id="classDay">N/A</span></p>
+                    <p class="text-gray-700 mb-1"><i class="fas fa-clock mr-2 w-4 text-center text-lime-600"></i>Time: <span id="classTime">N/A</span></p>
+                    <p class="text-gray-700 mb-1"><i class="fas fa-stopwatch mr-2 w-4 text-center text-lime-600"></i>Duration: <span id="classDuration">N/A</span></p>
+                    <p class="text-gray-700 mb-1"><i class="fas fa-users mr-2 w-4 text-center text-lime-600"></i>Spots Available: <span id="classSpots">N/A</span></p>
+                    <p class="text-gray-700 mt-3 text-sm" id="classDescription">Description will load here.</p>
+                </div>
+
+                <div id="bookingError" class="hidden mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md"></div>
+
+                <div class="mt-6">
+                    <p class="text-sm text-gray-600 mb-4">
+                        By clicking "Confirm Booking", you agree to our class cancellation policy.
+                        Ensure your membership plan covers this class type or be prepared for any additional charges if applicable.
+                    </p>
+                    <button id="confirmBookingBtn" class="btn-primary w-full text-lg">
+                        <i class="fas fa-check-circle mr-2"></i>Confirm Booking
+                    </button>
+                </div>
+            </div>
+
+            <div id="bookingConfirmationSection" class="details-card hidden mt-8 text-center">
+                <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">Booking Confirmed!</h2>
+                <p class="text-gray-600 mb-2">You're all set for <strong id="confirmedClassName"></strong>.</p>
+                <p class="text-gray-600 mb-6">A confirmation email has been sent to your registered address.</p>
+                <div class="space-y-3 sm:space-y-0 sm:flex sm:justify-center sm:space-x-4">
+                    <a href="member_booked_classes.html" class="btn-primary">View My Bookings</a>
+                    <a href="../schedule.html" class="btn-secondary">Book Another Class</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+    <div class="container mx-auto px-6 text-center">
+        <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if your backend runs elsewhere
+
+    // DOM Elements
+    const classNameEl = document.getElementById('className');
+    const classInstructorEl = document.getElementById('classInstructor');
+    const classDayEl = document.getElementById('classDay');
+    const classTimeEl = document.getElementById('classTime');
+    const classDurationEl = document.getElementById('classDuration');
+    const classSpotsEl = document.getElementById('classSpots');
+    const classDescriptionEl = document.getElementById('classDescription');
+    const confirmBookingBtn = document.getElementById('confirmBookingBtn');
+    const bookingDetailsSection = document.getElementById('bookingDetailsSection');
+    const bookingConfirmationSection = document.getElementById('bookingConfirmationSection');
+    const confirmedClassNameEl = document.getElementById('confirmedClassName');
+    const bookingErrorEl = document.getElementById('bookingError');
+    const backToScheduleLink = document.querySelector('a[href="../schedule.html"]'); // Adjusted path
+
+    let selectedClassDetails = null;
+    let currentMemberId = null;
+    let authToken = null;
+
+    function checkLoginStatus() {
+        authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        currentMemberId = localStorage.getItem('memberId') || sessionStorage.getItem('memberId');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+        if (!authToken || !currentMemberId) {
+            alert('You must be logged in to book a class. Redirecting to login...');
+            // Store the intended class booking so we can redirect back after login
+            const urlParamsForRedirect = new URLSearchParams(window.location.search);
+            const classIdForRedirect = urlParamsForRedirect.get('classId');
+            if (classIdForRedirect) {
+                localStorage.setItem('intendedBookingClassId', classIdForRedirect);
+            }
+            window.location.href = '../login.html'; // Adjusted path
+            return false;
+        }
+        if (userRole === 'ADMIN') {
+            // Optional: Admins might not book classes this way, or you might allow it.
+            // For now, let's assume admins don't use this member booking page.
+            // alert('Admin accounts cannot book classes through this portal.');
+            // window.location.href = '../admin/admin_dashboard.html'; // Adjusted path
+            // return false;
+        }
+        return true;
+    }
+
+    function displayError(message) {
+        if (bookingErrorEl) {
+            bookingErrorEl.textContent = message;
+            bookingErrorEl.classList.remove('hidden');
+        }
+        if (classNameEl && classNameEl.textContent === "Loading class details...") {
+            classNameEl.textContent = "Error loading class";
+        }
+        if (confirmBookingBtn) confirmBookingBtn.disabled = true;
+    }
+
+    async function loadClassDetails() {
+        if (!checkLoginStatus()) return;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const classId = urlParams.get('classId');
+
+        if (!classId) {
+            displayError("No class selected. Please go back to the schedule and choose a class.");
+            if(backToScheduleLink) backToScheduleLink.classList.remove('hidden'); // Show back link
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/classes/${classId}`, {
+                headers: { 'X-Auth-Token': authToken } // Assuming your class details might be protected
+            });
+            if (!response.ok) {
+                if (response.status === 404) throw new Error(`Class with ID "${classId}" not found.`);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            selectedClassDetails = await response.json();
+
+            if (!selectedClassDetails) {
+                displayError(`Class with ID "${classId}" not found or details are unavailable.`);
+                return;
+            }
+
+            if (classNameEl) classNameEl.textContent = selectedClassDetails.name;
+            if (classInstructorEl) classInstructorEl.textContent = selectedClassDetails.instructor;
+            if (classDayEl) classDayEl.textContent = selectedClassDetails.dayOfWeek.charAt(0).toUpperCase() + selectedClassDetails.dayOfWeek.slice(1);
+
+            let displayTime = selectedClassDetails.time;
+            if (selectedClassDetails.time && selectedClassDetails.time.includes(':')) {
+                const [hours, minutes] = selectedClassDetails.time.split(':');
+                const h = parseInt(hours);
+                const suffix = h >= 12 ? 'PM' : 'AM';
+                const h12 = ((h + 11) % 12 + 1);
+                displayTime = `${h12}:${minutes} ${suffix}`;
+            }
+            if (classTimeEl) classTimeEl.textContent = displayTime;
+
+            if (classDurationEl) classDurationEl.textContent = selectedClassDetails.duration;
+
+            const spotsLeft = selectedClassDetails.capacity - selectedClassDetails.bookedSpots;
+            if (classSpotsEl) classSpotsEl.textContent = spotsLeft > 0 ? `${spotsLeft} available` : "Fully Booked";
+
+            if (classDescriptionEl) classDescriptionEl.textContent = selectedClassDetails.description || "No description available.";
+
+            if (spotsLeft <= 0 || selectedClassDetails.status !== 'active') {
+                displayError(selectedClassDetails.status !== 'active' ? "This class is currently not active for booking." : "This class is fully booked. Please choose another class.");
+            } else {
+                if (confirmBookingBtn) confirmBookingBtn.disabled = false;
+            }
+
+        } catch (error) {
+            console.error('Failed to load class details:', error);
+            displayError(error.message || 'Could not load class details. Please try again.');
+        }
+    }
+
+    async function handleConfirmBooking() {
+        if (!selectedClassDetails || (selectedClassDetails.capacity - selectedClassDetails.bookedSpots <= 0) || selectedClassDetails.status !== 'active') {
+            displayError("Cannot book this class. It might be full, inactive, or details are missing.");
+            return;
+        }
+        if (!currentMemberId || !authToken) {
+            displayError("User not properly authenticated. Please log in again.");
+            return;
+        }
+
+        if (confirmBookingBtn) {
+            confirmBookingBtn.disabled = true;
+            confirmBookingBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        }
+        if (bookingErrorEl) bookingErrorEl.classList.add('hidden');
+
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/bookings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-Token': authToken // Send token for authentication
+                },
+                body: JSON.stringify({
+                    memberId: currentMemberId,
+                    classId: selectedClassDetails.id
+                })
+            });
+
+            if (response.ok) {
+                const bookingConfirmation = await response.json();
+                if (bookingDetailsSection) bookingDetailsSection.classList.add('hidden');
+                if (bookingConfirmationSection) bookingConfirmationSection.classList.remove('hidden');
+                if (confirmedClassNameEl) confirmedClassNameEl.textContent = selectedClassDetails.name;
+                localStorage.removeItem('intendedBookingClassId'); // Clear if redirected from login
+                localStorage.removeItem('intendedBookingClassName');
+            } else {
+                const errorText = await response.text();
+                displayError(`Booking failed: ${errorText || response.statusText}`);
+                if (confirmBookingBtn) {
+                    confirmBookingBtn.disabled = false;
+                    confirmBookingBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Confirm Booking';
+                }
+            }
+        } catch (error) {
+            console.error('Error during booking:', error);
+            displayError('An network error occurred while trying to book the class.');
+            if (confirmBookingBtn) {
+                confirmBookingBtn.disabled = false;
+                confirmBookingBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Confirm Booking';
+            }
+        }
+    }
+
+    if (confirmBookingBtn) {
+        confirmBookingBtn.addEventListener('click', handleConfirmBooking);
+    }
+
+    // Mobile menu toggle (assuming header is consistent across member pages)
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    }
+
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+
+    // Load class details on page load
+    window.addEventListener('DOMContentLoaded', loadClassDetails);
+</script>
+</body>
+</html>
