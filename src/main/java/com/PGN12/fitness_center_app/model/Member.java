@@ -1,5 +1,6 @@
 package com.PGN12.fitness_center_app.model;
 
+import com.PGN12.fitness_center_app.service.PaymentService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;

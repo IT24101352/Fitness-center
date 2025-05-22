@@ -18,7 +18,7 @@ import java.util.Optional;
 @RequestMapping("/api/payments")
 public class PaymentController {
 
-
+    private final PaymentService paymentService;
 
     @Autowired
     public PaymentController(PaymentService paymentService) {
