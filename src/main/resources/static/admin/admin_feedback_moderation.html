@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Feedback Moderation - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .accent-text { color: #A3E635; }
+        .sidebar { background-color: #1F2937; color: #e5e7eb; }
+        .sidebar a { transition: background-color 0.2s ease, color 0.2s ease; border-left: 3px solid transparent; }
+        .sidebar a:hover, .sidebar a.active { background-color: #374151; color: #A3E635; border-left-color: #A3E635; }
+        .table-header { background-color: #111827; color: white; }
+        .table-cell { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+        .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; border-radius: 0.375rem; }
+        .btn-approve { background-color: #10B981; color: white; } .btn-approve:hover { background-color: #059669; }
+        .btn-reject { background-color: #EF4444; color: white; } .btn-reject:hover { background-color: #DC2626; }
+        .btn-view { background-color: #3B82F6; color: white; } .btn-view:hover { background-color: #2563EB; }
+        .status-pending { background-color: #FEF3C7; color: #92400E; }
+        .status-approved { background-color: #D1FAE5; color: #065F46; }
+        .status-rejected { background-color: #FEE2E2; color: #991B1B; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500; font-size: 0.75rem; text-transform: capitalize;}
+        .feedback-content { max-height: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .feedback-content.expanded { max-height: none; white-space: normal; }
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+    <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+    <nav>
+        <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+        <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+        <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+        <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+        <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+        <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+        <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+        <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a id="logoutLinkSidebar" href="../index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+            <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+            <h1 class="text-xl font-semibold text-gray-700 ml-2">Feedback Moderation</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-gray-600">Admin</span>
+            <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Manage Member Feedback</h2>
+            <select id="statusFilter" class="form-input w-auto text-sm py-2">
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-lg overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="table-header">
+                <tr>
+                    <th class="table-cell text-left">Date</th>
+                    <th class="table-cell text-left">Type</th>
+                    <th class="table-cell text-left">Target</th>
+                    <th class="table-cell text-left">Reviewer</th>
+                    <th class="table-cell text-left">Comment</th>
+                    <th class="table-cell text-center">Rating</th>
+                    <th class="table-cell text-center">Status</th>
+                    <th class="table-cell text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="feedbackTableBody">
+                </tbody>
+            </table>
+        </div>
+        <p id="noFeedbackMessage" class="text-center text-gray-500 mt-8 py-4 hidden">No feedback entries match your criteria.</p>
+        <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+        </footer>
+    </main>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+    <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+        <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fas fa-times fa-lg"></i></button>
+        <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+        <nav>
+            <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+            <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-comments mr-2"></i>Feedback</a>
+            <a href="#settings" class="block py-2.5 px-4 rounded"><i class="fas fa-cog mr-2"></i>Settings</a>
+            <a href="index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </nav>
+    </aside>
+</div>
+
+<script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if needed
+
+    let authToken = null;
+    let allFeedbackData = []; // Store all feedback for client-side filtering
+
+    // DOM Elements
+    const feedbackTableBody = document.getElementById('feedbackTableBody');
+    const noFeedbackMessage = document.getElementById('noFeedbackMessage');
+    const statusFilterSelect = document.getElementById('statusFilter');
+
+    function checkAdminLoginAndLoadFeedback() {
+        authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+        if (!authToken || userRole !== 'ADMIN') {
+            alert('Access Denied. Admin privileges required. Redirecting to login...');
+            localStorage.clear(); sessionStorage.clear();
+            window.location.href = '../login.html'; // Adjust path
+            return;
+        }
+        // Update welcome message
+        const welcomeSpan = document.querySelector('header div.flex.items-center.space-x-4 > span.text-gray-600');
+        const adminName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Admin';
+        if (welcomeSpan) welcomeSpan.textContent = `Welcome, ${adminName.split(' ')[0]}!`;
+
+        fetchAllFeedback();
+    }
+
+    async function fetchAllFeedback() {
+        if (!authToken) return;
+        if (feedbackTableBody) feedbackTableBody.innerHTML = `<tr><td colspan="8" class="table-cell text-center">Loading feedback...</td></tr>`;
+
+        try {
+            // Fetch all feedback for admin, filtering will happen client-side or via query param
+            const response = await fetch(`${API_BASE_URL}/feedback/admin/all`, {
+                headers: { 'X-Auth-Token': authToken }
+            });
+            if (!response.ok) {
+                 if (response.status === 401 || response.status === 403) {
+                     alert('Session expired or invalid. Please log in again.');
+                     window.location.href = '../login.html';
+                }
+                throw new Error(`Failed to fetch feedback: ${response.statusText}`);
+            }
+            allFeedbackData = await response.json();
+            filterAndRenderFeedback(); // Initial render based on default filter
+        } catch (error) {
+            console.error('Error fetching feedback:', error);
+            if (noFeedbackMessage) {
+                noFeedbackMessage.textContent = `Could not load feedback. ${error.message}`;
+                noFeedbackMessage.classList.remove('hidden');
+            }
+            if (feedbackTableBody) feedbackTableBody.innerHTML = `<tr><td colspan="8" class="table-cell text-center text-red-500">Error loading feedback.</td></tr>`;
+        }
+    }
+
+    function filterAndRenderFeedback() {
+        const selectedStatus = statusFilterSelect ? statusFilterSelect.value : "all";
+        let feedbackToRender = allFeedbackData;
+
+        if (selectedStatus !== "all") {
+            feedbackToRender = allFeedbackData.filter(item => item.status.toLowerCase() === selectedStatus.toLowerCase());
+        }
+        renderFeedbackTable(feedbackToRender);
+    }
+
+
+    function renderFeedbackTable(feedbackItems) {
+        if(!feedbackTableBody || !noFeedbackMessage) return;
+        feedbackTableBody.innerHTML = '';
+
+        if (feedbackItems.length === 0) {
+            noFeedbackMessage.textContent = 'No feedback entries match your criteria.';
+            noFeedbackMessage.classList.remove('hidden');
+        } else {
+            noFeedbackMessage.classList.add('hidden');
+        }
+
+        feedbackItems.forEach(item => {
+            let statusBadgeClass = '';
+            switch (item.status.toLowerCase()) {
+                case 'approved': statusBadgeClass = 'status-approved'; break;
+                case 'pending': statusBadgeClass = 'status-pending'; break;
+                case 'rejected': statusBadgeClass = 'status-rejected'; break;
+                default: statusBadgeClass = 'bg-gray-200 text-gray-700';
+            }
+            const reviewerDisplay = item.anonymous ? 'Anonymous' : (item.reviewerName || item.memberId || 'Unknown');
+            let displayDate = item.submissionDate;
+            try { displayDate = new Date(item.submissionDate).toLocaleDateString('en-CA'); } catch(e) {}
+
+            const row = `
+                <tr id="feedback-row-${item.feedbackId}">
+                    <td class="table-cell text-gray-500">${displayDate}</td>
+                    <td class="table-cell text-gray-500 capitalize">${item.feedbackType}</td>
+                    <td class="table-cell text-gray-900 font-medium">${item.targetName || 'N/A'}</td>
+                    <td class="table-cell text-gray-500">${reviewerDisplay}</td>
+                    <td class="table-cell text-gray-500">
+                        <div class="feedback-content" title="${item.comments}" onclick="this.classList.toggle('expanded')">${item.comments}</div>
+                    </td>
+                    <td class="table-cell text-center text-yellow-500">${item.rating ? `${item.rating}/5 <i class="fas fa-star"></i>` : 'N/A'}</td>
+                    <td class="table-cell text-center"><span class="status-badge ${statusBadgeClass}">${item.status}</span></td>
+                    <td class="table-cell text-center space-x-1">
+                        ${item.status.toLowerCase() === 'pending' ? `
+                            <button class="btn-sm btn-approve" title="Approve" onclick="moderateFeedbackStatus('${item.feedbackId}', 'APPROVED')"><i class="fas fa-check"></i></button>
+                            <button class="btn-sm btn-reject" title="Reject" onclick="moderateFeedbackStatus('${item.feedbackId}', 'REJECTED')"><i class="fas fa-times"></i></button>
+                        ` : item.status.toLowerCase() === 'approved' ? `
+                            <button class="btn-sm btn-reject" title="Reject" onclick="moderateFeedbackStatus('${item.feedbackId}', 'REJECTED')"><i class="fas fa-times"></i></button>
+                        ` : `
+                            <button class="btn-sm btn-approve" title="Re-approve" onclick="moderateFeedbackStatus('${item.feedbackId}', 'APPROVED')"><i class="fas fa-check"></i></button>
+                        `}
+                        <button class="btn-sm btn-view" title="View Full / Notes" onclick="viewFeedbackDetails('${item.feedbackId}')"><i class="fas fa-eye"></i></button>
+                        <button class="btn-sm bg-red-500 hover:bg-red-600 text-white" title="Delete Feedback" onclick="deleteFeedbackEntry('${item.feedbackId}')"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `;
+            feedbackTableBody.innerHTML += row;
+        });
+    }
+
+    if(statusFilterSelect) {
+        statusFilterSelect.addEventListener('change', filterAndRenderFeedback);
+    }
+
+    async function moderateFeedbackStatus(feedbackId, newStatus) {
+        let adminNotes = "";
+        if (newStatus === 'REJECTED') {
+            adminNotes = prompt("Enter reason for rejection (optional):") || "Rejected by admin.";
+        } else {
+            adminNotes = "Approved by admin.";
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/feedback/admin/moderate/${feedbackId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-Token': authToken
+                },
+                body: JSON.stringify({ status: newStatus, adminNotes: adminNotes })
+            });
+
+            if (response.ok) {
+                alert(`Feedback ID ${feedbackId} status updated to ${newStatus}.`);
+                fetchAllFeedback(); // Refresh the list
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to update feedback status: ${errorText || response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Error moderating feedback:', error);
+            alert('An error occurred while moderating feedback.');
+        }
+    }
+
+    function viewFeedbackDetails(feedbackId) {
+        const item = allFeedbackData.find(fb => fb.feedbackId === feedbackId);
+        if(item){
+            alert(`Viewing Full Feedback (ID: ${item.feedbackId}):\nReviewer: ${item.anonymous ? 'Anonymous' : item.reviewerName || item.memberId}\nType: ${item.feedbackType}\nTarget: ${item.targetName || 'N/A'}\nRating: ${item.rating || 'N/A'}\nComment: ${item.comments}\nStatus: ${item.status}\nAdmin Notes: ${item.adminNotes || 'N/A'}`);
+        }
+    }
+
+    async function deleteFeedbackEntry(feedbackId) {
+        if (!confirm(`Are you sure you want to delete feedback ID ${feedbackId}?`)) return;
+        try {
+            const response = await fetch(`${API_BASE_URL}/feedback/admin/${feedbackId}`, {
+                method: 'DELETE',
+                headers: { 'X-Auth-Token': authToken }
+            });
+            if (response.ok) {
+                alert(`Feedback ID ${feedbackId} deleted successfully.`);
+                fetchAllFeedback(); // Refresh
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to delete feedback: ${errorText || response.statusText}`);
+            }
+        } catch (error) {
+            console.error("Error deleting feedback:", error);
+            alert("An error occurred while deleting feedback.");
+        }
+    }
+
+    // Sidebar Toggle & common elements
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+    const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+    if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+        sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+        closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    }
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) currentYearElement.textContent = new Date().getFullYear();
+    const logoutButton = document.querySelector('aside.sidebar nav a[href="../index.html"]');
+    if (logoutButton && logoutButton.textContent.toLowerCase().includes('logout')) {
+         logoutButton.addEventListener('click', (e) => {
+            e.preventDefault(); localStorage.clear(); sessionStorage.clear(); window.location.href = '../login.html';
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', checkAdminLoginAndLoadFeedback);
+</script>
+</body>
+</html>

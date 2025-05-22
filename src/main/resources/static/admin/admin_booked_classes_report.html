@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: All Booked Classes - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .accent-text { color: #A3E635; }
+        .sidebar { background-color: #1F2937; color: #e5e7eb; }
+        .sidebar a { transition: background-color 0.2s ease, color 0.2s ease; border-left: 3px solid transparent; }
+        .sidebar a:hover, .sidebar a.active { background-color: #374151; color: #A3E635; border-left-color: #A3E635; }
+        .table-header { background-color: #111827; color: white; }
+        .table-cell { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+        .form-input { border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.5rem 1rem; width: 100%; }
+        .form-input:focus { border-color: #A3E635; box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.3); outline: none; }
+        .status-confirmed { background-color: #D1FAE5; color: #065F46; }
+        .status-cancelled_member { background-color: #FEE2E2; color: #991B1B; }
+        .status-cancelled_admin { background-color: #FEF3C7; color: #92400E; } /* Example for admin cancelled */
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500; font-size: 0.75rem; text-transform: capitalize;}
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+    <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+    <nav>
+        <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+        <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+        <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+        <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+        <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+        <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+        <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+        <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a id="logoutLinkSidebar" href="#" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+            <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+            <h1 class="text-xl font-semibold text-gray-700 ml-2">All Class Bookings Report</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="adminWelcomeName" class="text-gray-600">Admin</span>
+            <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">View All Bookings</h2>
+        </div>
+
+        <div class="mb-6 bg-white p-4 rounded-lg shadow">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <input type="text" id="classSearch" placeholder="Filter by Class Name..." class="form-input text-sm">
+                <input type="text" id="memberSearch" placeholder="Filter by Member Name/ID..." class="form-input text-sm">
+                <select id="statusFilter" class="form-input text-sm">
+                    <option value="all">All Statuses</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="CANCELLED_MEMBER">Cancelled by Member</option>
+                    <option value="CANCELLED_ADMIN">Cancelled by Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-lg overflow-x-auto mb-6">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="table-header">
+                <tr>
+                    <th class="table-cell text-left">Booking ID</th>
+                    <th class="table-cell text-left">Class Name</th>
+                    <th class="table-cell text-left">Member Name</th>
+                    <th class="table-cell text-left">Member Email</th>
+                    <th class="table-cell text-left">Booking Time</th>
+                    <th class="table-cell text-center">Status</th>
+                    <th class="table-cell text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="allBookingsTableBody">
+                </tbody>
+            </table>
+        </div>
+        <p id="noAllBookingsMessage" class="text-center text-gray-500 mt-8 hidden">No bookings found matching your criteria.</p>
+
+        <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+        </footer>
+    </main>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+    <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+        <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fas fa-times fa-lg"></i></button>
+        <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+        <nav>
+            <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+            <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+            <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+            <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+            <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+            <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+            <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+            <a id="logoutLinkMobileSidebar" href="#" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </nav>
+    </aside>
+</div>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8080/api';
+    let authToken = null;
+    let allBookingsData = []; // To store all fetched bookings with details
+
+    const allBookingsTableBody = document.getElementById('allBookingsTableBody');
+    const noAllBookingsMessage = document.getElementById('noAllBookingsMessage');
+    const adminWelcomeNameEl = document.getElementById('adminWelcomeName');
+
+    // Filter elements
+    const classSearchInput = document.getElementById('classSearch');
+    const memberSearchInput = document.getElementById('memberSearch');
+    const statusFilterSelect = document.getElementById('statusFilter');
+
+
+    function checkAdminLoginAndLoadData() {
+        authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const adminFullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Admin';
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+        if (!authToken || userRole !== 'ADMIN') {
+            alert('Access Denied. Admin privileges required.');
+            window.location.href = '../login.html';
+            return;
+        }
+        if (adminWelcomeNameEl) {
+            adminWelcomeNameEl.textContent = `Welcome, ${adminFullName.split(' ')[0]}!`;
+        }
+        fetchAllBookingsDetails();
+    }
+
+    async function fetchAllBookingsDetails() {
+          if (!allBookingsTableBody || !noAllBookingsMessage || !authToken) return;
+
+          allBookingsTableBody.innerHTML = `<tr><td colspan="7" class="table-cell text-center">Loading all bookings...</td></tr>`;
+          noAllBookingsMessage.classList.add('hidden');
+
+          try {
+              const bookingsResponse = await fetch(`${API_BASE_URL}/bookings/admin/all`, {
+                  headers: { 'X-Auth-Token': authToken }
+              });
+              if (!bookingsResponse.ok) {
+                   if (bookingsResponse.status === 401 || bookingsResponse.status === 403) {
+                      alert('Session expired or unauthorized. Please log in again.');
+                      window.location.href = '../login.html';
+                      return;
+                  }
+                  throw new Error(`Failed to fetch bookings: ${bookingsResponse.statusText}`);
+              }
+              const bookings = await bookingsResponse.json();
+
+              if (bookings.length === 0) {
+                  noAllBookingsMessage.textContent = "No bookings found.";
+                  noAllBookingsMessage.classList.remove('hidden');
+                  allBookingsTableBody.innerHTML = '';
+                  allBookingsData = [];
+                  return;
+              }
+
+              const detailedBookingsPromises = bookings.map(async (booking) => {
+                  let className = 'N/A', classDay = 'N/A', classTime = 'N/A', instructor = 'N/A'; // Correctly defined
+                  let memberName = 'N/A', memberEmail = 'N/A';
+
+                  // Fetch Class Details
+                  if (booking.classId) { // Check if classId exists
+                      try {
+                          const classRes = await fetch(`${API_BASE_URL}/classes/${booking.classId}`, { headers: { 'X-Auth-Token': authToken } });
+                          if (classRes.ok) {
+                              const cls = await classRes.json();
+                              className = cls.name || 'N/A';
+                              classDay = cls.dayOfWeek || 'N/A';
+                              classTime = cls.time || 'N/A';
+                              instructor = cls.instructor || 'N/A'; // Assign to 'instructor'
+                          } else {
+                               console.warn(`Could not fetch details for class ${booking.classId}: ${classRes.status}`);
+                          }
+                      } catch (e) { console.error(`Error fetching class ${booking.classId}:`, e); }
+                  }
+
+
+                  // Fetch Member Details
+                  if (booking.memberId) { // Check if memberId exists
+                      try {
+                          const memberRes = await fetch(`${API_BASE_URL}/members/${booking.memberId}`, { headers: { 'X-Auth-Token': authToken } });
+                          if (memberRes.ok) {
+                              const member = await memberRes.json();
+                              memberName = member.fullName || 'N/A';
+                              memberEmail = member.email || 'N/A';
+                          } else {
+                              console.warn(`Could not fetch details for member ${booking.memberId}: ${memberRes.status}`);
+                          }
+                      } catch (e) { console.error(`Error fetching member ${booking.memberId}:`, e); }
+                  }
+
+
+                  return {
+                      ...booking,
+                      className,
+                      classDay,
+                      classTime,
+                      instructor: instructor, // *** CORRECTED LINE: Use the 'instructor' variable ***
+                      memberName,
+                      memberEmail
+                  };
+              });
+
+              allBookingsData = await Promise.all(detailedBookingsPromises);
+              filterAndRenderAllBookings();
+
+          } catch (error) {
+              console.error("Error fetching all booking details:", error);
+              noAllBookingsMessage.textContent = `Could not load bookings: ${error.message}`;
+              noAllBookingsMessage.classList.remove('hidden');
+              allBookingsTableBody.innerHTML = `<tr><td colspan="7" class="table-cell text-center text-red-500">Error loading booking data.</td></tr>`;
+              allBookingsData = [];
+          }
+      }
+
+    function formatDisplayTime(timeStr) {
+        if (!timeStr || !timeStr.includes(':')) return 'N/A';
+        const [hours, minutes] = timeStr.split(':');
+        const h = parseInt(hours);
+        const suffix = h >= 12 ? 'PM' : 'AM';
+        const h12 = ((h + 11) % 12 + 1);
+        return `${String(h12).padStart(2, '0')}:${minutes} ${suffix}`;
+    }
+
+
+    function filterAndRenderAllBookings() {
+        let filteredBookings = [...allBookingsData];
+        const classQuery = classSearchInput.value.toLowerCase();
+        const memberQuery = memberSearchInput.value.toLowerCase();
+        const statusQuery = statusFilterSelect.value;
+
+        if (classQuery) {
+            filteredBookings = filteredBookings.filter(b => b.className && b.className.toLowerCase().includes(classQuery));
+        }
+        if (memberQuery) {
+            filteredBookings = filteredBookings.filter(b =>
+                (b.memberName && b.memberName.toLowerCase().includes(memberQuery)) ||
+                (b.memberId && b.memberId.toLowerCase().includes(memberQuery)) ||
+                (b.memberEmail && b.memberEmail.toLowerCase().includes(memberQuery))
+            );
+        }
+        if (statusQuery !== 'all') {
+            filteredBookings = filteredBookings.filter(b => b.status.toUpperCase() === statusQuery.toUpperCase());
+        }
+
+        renderAllBookingsTable(filteredBookings);
+    }
+
+
+    function renderAllBookingsTable(bookingsToRender) {
+        allBookingsTableBody.innerHTML = '';
+        if (bookingsToRender.length === 0) {
+            noAllBookingsMessage.classList.remove('hidden');
+            return;
+        }
+        noAllBookingsMessage.classList.add('hidden');
+
+        bookingsToRender.forEach(booking => {
+            let statusBadgeClass = 'bg-gray-200 text-gray-700';
+            switch (booking.status.toUpperCase()) {
+                case 'CONFIRMED': statusBadgeClass = 'status-confirmed'; break;
+                case 'CANCELLED_MEMBER': statusBadgeClass = 'status-cancelled_member'; break;
+                case 'CANCELLED_ADMIN': statusBadgeClass = 'status-cancelled_admin'; break;
+            }
+
+            let displayBookingTime = booking.bookingTimestamp;
+            try {
+                displayBookingTime = new Date(booking.bookingTimestamp).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+            } catch(e) { /* use original if parsing fails */ }
+
+            const row = `
+                <tr>
+                    <td class="table-cell text-gray-500">${booking.bookingId}</td>
+                    <td class="table-cell font-medium text-gray-900">${booking.className || 'N/A'} <br> <span class="text-xs text-gray-500">${booking.classDay ? (booking.classDay.charAt(0).toUpperCase() + booking.classDay.slice(1)) : ''} at ${booking.classTime ? formatDisplayTime(booking.classTime) : ''}</span></td>
+                    <td class="table-cell text-gray-900">${booking.memberName || 'N/A'}</td>
+                    <td class="table-cell text-gray-500">${booking.memberEmail || 'N/A'}</td>
+                    <td class="table-cell text-gray-500">${displayBookingTime}</td>
+                    <td class="table-cell text-center"><span class="status-badge ${statusBadgeClass}">${booking.status}</span></td>
+                    <td class="table-cell text-center">
+                        ${booking.status.toUpperCase() === 'CONFIRMED' ?
+                        `<button onclick="adminCancelBooking('${booking.bookingId}')" class="text-xs bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" title="Cancel Booking">
+                            <i class="fas fa-times-circle mr-1"></i>Cancel
+                         </button>` :
+                         '<span class="text-xs text-gray-400">-</span>'}
+                    </td>
+                </tr>
+            `;
+            allBookingsTableBody.innerHTML += row;
+        });
+    }
+
+    async function adminCancelBooking(bookingId) {
+        if (!confirm(`Are you sure you want to cancel booking ID ${bookingId} as an Admin?`)) return;
+        try {
+            const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/cancel`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Auth-Token': authToken },
+                body: JSON.stringify({ cancelledBy: "ADMIN" })
+            });
+            if (response.ok) {
+                alert("Booking cancelled successfully by Admin.");
+                fetchAllBookingsDetails(); // Refresh the list
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to cancel booking: ${errorText || 'Please try again.'}`);
+            }
+        } catch (error) {
+            console.error("Error cancelling booking:", error);
+            alert("An error occurred.");
+        }
+    }
+
+    // Add event listeners to filter inputs
+    if(classSearchInput) classSearchInput.addEventListener('input', filterAndRenderAllBookings);
+    if(memberSearchInput) memberSearchInput.addEventListener('input', filterAndRenderAllBookings);
+    if(statusFilterSelect) statusFilterSelect.addEventListener('change', filterAndRenderAllBookings);
+
+
+    // Sidebar Toggle & common elements
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+    const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+    if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+        sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+        closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    }
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) currentYearElement.textContent = new Date().getFullYear();
+
+    function performLogout(e) {
+        e.preventDefault();
+        localStorage.clear(); sessionStorage.clear();
+        window.location.href = '../login.html';
+    }
+    const logoutBtnSidebar = document.getElementById('logoutLinkSidebar');
+    if (logoutBtnSidebar) logoutBtnSidebar.addEventListener('click', performLogout);
+    const logoutBtnMobileSidebar = document.getElementById('logoutLinkMobileSidebar');
+    if (logoutBtnMobileSidebar) logoutBtnMobileSidebar.addEventListener('click', performLogout);
+
+    window.addEventListener('DOMContentLoaded', checkAdminLoginAndLoadData);
+</script>
+</body>
+</html>

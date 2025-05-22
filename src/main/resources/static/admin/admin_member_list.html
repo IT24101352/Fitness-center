@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Member List - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Gray 100 */
+        }
+        .accent-text {
+            color: #A3E635; /* Lime Green */
+        }
+        .sidebar {
+            background-color: #1F2937; /* Dark Gray */
+            color: #e5e7eb; /* Gray 200 */
+        }
+        .sidebar a {
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #374151; /* Lighter Dark Gray */
+            color: #A3E635;
+            border-left-color: #A3E635;
+        }
+        .table-header {
+            background-color: #111827; /* Even Darker Gray for table head */
+            color: white;
+        }
+        .table-cell {
+            padding: 0.75rem 1rem; /* 12px 16px */
+            border-bottom: 1px solid #e5e7eb; /* Gray 200 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .btn-sm {
+            padding: 0.375rem 0.75rem; /* 6px 12px */
+            font-size: 0.75rem; /* text-xs */
+            border-radius: 0.375rem; /* 6px */
+        }
+        .btn-edit {
+            background-color: #3B82F6; /* Blue 500 */
+            color: white;
+        }
+        .btn-edit:hover {
+            background-color: #2563EB; /* Blue 600 */
+        }
+        .btn-delete {
+            background-color: #EF4444; /* Red 500 */
+            color: white;
+        }
+        .btn-delete:hover {
+            background-color: #DC2626; /* Red 600 */
+        }
+        .btn-view {
+            background-color: #10B981; /* Emerald 500 */
+            color: white;
+        }
+        .btn-view:hover {
+            background-color: #059669; /* Emerald 600 */
+        }
+        .status-active {
+            background-color: #D1FAE5; /* Green 100 */
+            color: #065F46; /* Green 700 */
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px; /* pill shape */
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-inactive, .status-pending_payment {
+            background-color: #FEE2E2; /* Red 100 */
+            color: #991B1B; /* Red 700 */
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+    <div class="text-2xl font-bold text-white mb-6 text-center">
+        Admin <span class="accent-text">Panel</span>
+    </div>
+    <nav>
+        <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+        <a href="admin_member_list.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-users mr-2"></i>Members</a>
+        <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+        <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+        <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+        <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+        <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+        <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a id="logoutLinkSidebar" href="#" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+            <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <h1 class="text-xl font-semibold text-gray-700 ml-2">Member Management</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-gray-600">Admin</span>
+            <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Member List</h2>
+        </div>
+
+        <div class="mb-6 bg-white p-4 rounded-lg shadow">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="searchMember" class="sr-only">Search Members</label>
+                    <input type="text" id="searchMember" placeholder="Search by Name, ID, Email..." class="w-full p-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500">
+                </div>
+                <div>
+                    <label for="filterPlan" class="sr-only">Filter by Plan</label>
+                    <select id="filterPlan" class="w-full p-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500">
+                        <option value="">All Plans</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filterStatus" class="sr-only">Filter by Status</label>
+                    <select id="filterStatus" class="w-full p-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="pending_payment">Pending Payment</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="sortRenewalDate" class="sr-only">Sort by Renewal Date</label>
+                    <select id="sortRenewalDate" class="w-full p-2 border border-gray-300 rounded-md focus:ring-lime-500 focus:border-lime-500">
+                        <option value="">Default Order</option>
+                        <option value="renewal_asc">Renewal Date (Oldest First)</option>
+                        <option value="renewal_desc">Renewal Date (Newest First)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-lg overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="table-header">
+                <tr>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Member ID</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Full Name</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Email</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Plan</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Join Date</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Last Renewal</th>
+                    <th scope="col" class="table-cell text-center uppercase tracking-wider">Status</th>
+                    <th scope="col" class="table-cell text-center uppercase tracking-wider">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="memberTableBody">
+                </tbody>
+            </table>
+        </div>
+        <p id="noMembersMessage" class="text-center text-gray-500 mt-8 hidden">No members match your filter criteria or no members found.</p>
+
+        <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+        </footer>
+    </main>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+    <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+        <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white">
+            <i class="fas fa-times fa-lg"></i>
+        </button>
+        <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+        <nav>
+            <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <a href="admin_member_list.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-users mr-2"></i>Members</a>
+            <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+            <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+            <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+            <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+            <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+            <a id="mobileLogoutLinkSidebar" href="#" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </nav>
+    </aside>
+</div>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8080/api';
+    let authToken = null;
+    let allMembersData = [];
+    let allPlansMap = {};
+
+    const memberTableBody = document.getElementById('memberTableBody');
+    const searchInput = document.getElementById('searchMember');
+    const planFilter = document.getElementById('filterPlan');
+    const statusFilter = document.getElementById('filterStatus');
+    const sortRenewalDateSelect = document.getElementById('sortRenewalDate');
+    const noMembersMessage = document.getElementById('noMembersMessage');
+
+    function checkAdminLoginAndLoadData() {
+        authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+        if (!authToken || userRole !== 'ADMIN') {
+            alert('Access Denied. Admin privileges required. Redirecting to login...');
+            localStorage.clear(); sessionStorage.clear();
+            window.top.location.href = '/login.html'; // FIX: Use window.top.location.href
+            return;
+        }
+        const welcomeSpan = document.querySelector('header div.flex.items-center.space-x-4 > span.text-gray-600');
+        const adminName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Admin';
+        if (welcomeSpan) welcomeSpan.textContent = `Welcome, ${adminName.split(' ')[0]}!`;
+
+        Promise.all([fetchPlansForFilter(), fetchAndFilterMembers()]);
+    }
+
+    async function fetchPlansForFilter() {
+        if (!planFilter || !authToken) return;
+        try {
+            const response = await fetch(`${API_BASE_URL}/plans`, { headers: { 'X-Auth-Token': authToken }});
+            if (response.ok) {
+                const plans = await response.json();
+                planFilter.innerHTML = '<option value="">All Plans</option>';
+                plans.forEach(plan => {
+                    allPlansMap[plan.id] = plan.name;
+                    const option = document.createElement('option');
+                    option.value = plan.id;
+                    option.textContent = plan.name;
+                    planFilter.appendChild(option);
+                });
+            } else {
+                console.error("Failed to populate plan filter, status:", response.status);
+            }
+        } catch (error) {
+            console.error("Error populating plan filter:", error);
+        }
+    }
+
+    async function fetchAndFilterMembers() {
+        if (!memberTableBody || !authToken) return;
+        memberTableBody.innerHTML = `<tr><td colspan="8" class="table-cell text-center">Loading members...</td></tr>`;
+
+        const renewalSortOrder = sortRenewalDateSelect ? sortRenewalDateSelect.value : "";
+        let url = `${API_BASE_URL}/members`;
+        let queryParams = new URLSearchParams();
+
+        if (renewalSortOrder === "renewal_asc") {
+            url = `${API_BASE_URL}/members/sorted-by-renewal`;
+            queryParams.append('ascending', 'true');
+        } else if (renewalSortOrder === "renewal_desc") {
+            url = `${API_BASE_URL}/members/sorted-by-renewal`;
+            queryParams.append('ascending', 'false');
+        }
+
+        try {
+            const response = await fetch(url + (queryParams.toString() ? `?${queryParams.toString()}` : ''), {
+                headers: { 'X-Auth-Token': authToken }
+            });
+            if (!response.ok) {
+                 if (response.status === 401 || response.status === 403) {
+                     alert('Session expired or invalid. Please log in again.');
+                     window.top.location.href = '/login.html'; // FIX: Use window.top.location.href
+                }
+                throw new Error(`Failed to fetch members: ${response.statusText} (${response.status})`);
+            }
+            allMembersData = await response.json();
+            applyClientSideFiltersAndRender();
+        } catch (error) {
+            console.error('Error fetching members:', error);
+            if (noMembersMessage) {
+                noMembersMessage.textContent = `Could not load members. ${error.message}`;
+                noMembersMessage.classList.remove('hidden');
+            }
+            memberTableBody.innerHTML = `<tr><td colspan="8" class="table-cell text-center text-red-500">Error loading members.</td></tr>`;
+        }
+    }
+
+    function applyClientSideFiltersAndRender() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+        const selectedPlanId = planFilter ? planFilter.value : "";
+        const selectedStatus = statusFilter ? statusFilter.value.toLowerCase() : "";
+
+        const filtered = allMembersData.filter(member => {
+            const memberFullName = (member.fullName || "").toLowerCase();
+            const memberEmail = (member.email || "").toLowerCase();
+            const memberId = (member.id || "").toLowerCase();
+
+            const matchesSearch = memberFullName.includes(searchTerm) ||
+                                  memberId.includes(searchTerm) ||
+                                  memberEmail.includes(searchTerm);
+            const matchesPlan = selectedPlanId === "" || member.membershipTierId === selectedPlanId;
+            const matchesStatus = selectedStatus === "" || (member.status && member.status.toLowerCase() === selectedStatus);
+
+            return matchesSearch && matchesPlan && matchesStatus;
+        });
+        renderMembers(filtered);
+    }
+
+    function renderMembers(membersToRender) {
+      if (!memberTableBody) return;
+      memberTableBody.innerHTML = '';
+
+      if (membersToRender.length === 0) {
+          if (noMembersMessage) {
+              noMembersMessage.textContent = 'No members match your filter criteria or no members found.';
+              noMembersMessage.classList.remove('hidden');
+          }
+      } else {
+          if (noMembersMessage) noMembersMessage.classList.add('hidden');
+      }
+
+      membersToRender.forEach(member => {
+          const memberStatus = member.status || 'unknown';
+          let statusClass = 'bg-gray-200 text-gray-700';
+          if (memberStatus.toLowerCase() === 'active') {
+              statusClass = 'status-active';
+          } else if (memberStatus.toLowerCase() === 'inactive' || memberStatus.toLowerCase() === 'pending_payment') {
+              statusClass = 'status-inactive';
+          }
+
+          const planNameDisplay = allPlansMap[member.membershipTierId] || member.membershipTierId || 'N/A';
+
+          let joinDateDisplay = 'N/A';
+          if (member.joinDate) {
+              try {
+                  joinDateDisplay = new Date(member.joinDate).toLocaleDateString('en-CA');
+              } catch (e) { joinDateDisplay = member.joinDate; }
+          }
+
+          let renewalDateDisplay = 'N/A';
+          if (member.lastRenewalDate) {
+              try {
+                  renewalDateDisplay = new Date(member.lastRenewalDate).toLocaleDateString('en-CA');
+              } catch (e) { renewalDateDisplay = member.lastRenewalDate; }
+          }
+
+          const row = `
+              <tr>
+                  <td class="table-cell text-gray-900">${member.id}</td>
+                  <td class="table-cell font-medium text-gray-900">${member.fullName}</td>
+                  <td class="table-cell text-gray-500">${member.email}</td>
+                  <td class="table-cell text-gray-500">${planNameDisplay}</td>
+                  <td class="table-cell text-gray-500">${joinDateDisplay}</td>
+                  <td class="table-cell text-gray-500">${renewalDateDisplay}</td>
+                  <td class="table-cell text-center">
+                      <span class="${statusClass} px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                          ${memberStatus.charAt(0).toUpperCase() + memberStatus.slice(1).replace('_', ' ')}
+                      </span>
+                  </td>
+                  <td class="table-cell text-center space-x-1">
+                      <button class="btn-sm btn-view" title="View Details" onclick="viewMember('${member.id}')"><i class="fas fa-eye"></i></button>
+                      <button class="btn-sm btn-edit" title="Edit Member" onclick="editMember('${member.id}')"><i class="fas fa-edit"></i></button>
+                      <button class="btn-sm btn-delete" title="Delete Member" onclick="deleteMember('${member.id}', '${member.fullName}')"><i class="fas fa-trash-alt"></i></button>
+                  </td>
+              </tr>
+          `;
+          memberTableBody.innerHTML += row;
+      });
+  }
+
+    if(searchInput) searchInput.addEventListener('input', applyClientSideFiltersAndRender);
+    if(planFilter) planFilter.addEventListener('change', applyClientSideFiltersAndRender);
+    if(statusFilter) statusFilter.addEventListener('change', applyClientSideFiltersAndRender);
+    if(sortRenewalDateSelect) sortRenewalDateSelect.addEventListener('change', fetchAndFilterMembers);
+
+    function viewMember(memberId) {
+        alert(`Viewing details for member ${memberId}. (Implementation needed: Modal or separate page)`);
+    }
+    function editMember(memberId) {
+        alert(`Editing member ${memberId}. (Implementation needed: Modal or separate page)`);
+    }
+    async function deleteMember(memberId, memberName) {
+        if(confirm(`Are you sure you want to delete member ${memberName} (ID: ${memberId})? This action cannot be undone.`)) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Auth-Token': authToken }
+                });
+                if (response.ok || response.status === 204) {
+                    alert(`Member ${memberName} deleted successfully.`);
+                    fetchAndFilterMembers();
+                } else {
+                     const errorText = await response.text();
+                    alert(`Failed to delete member: ${errorText || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error deleting member:', error);
+                alert('An error occurred while deleting the member.');
+            }
+        }
+    }
+
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+    const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+    if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+        sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+        closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    }
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) currentYearElement.textContent = new Date().getFullYear();
+
+    const logoutLinkSidebar = document.getElementById('logoutLinkSidebar');
+    const mobileLogoutLinkSidebar = document.getElementById('mobileLogoutLinkSidebar');
+    function handleLogout(e) {
+        e.preventDefault(); localStorage.clear(); sessionStorage.clear();
+        window.top.location.href = '/login.html'; // FIX: Use window.top.location.href
+    }
+    if(logoutLinkSidebar) logoutLinkSidebar.addEventListener('click', handleLogout);
+    if(mobileLogoutLinkSidebar) mobileLogoutLinkSidebar.addEventListener('click', handleLogout);
+
+    window.addEventListener('DOMContentLoaded', checkAdminLoginAndLoadData);
+</script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Gray 100 */
+        }
+        .accent-text {
+            color: #A3E635; /* Lime Green */
+        }
+        .sidebar {
+            background-color: #1F2937; /* Dark Gray */
+            color: #e5e7eb; /* Gray 200 */
+        }
+        .sidebar a {
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #374151; /* Lighter Dark Gray */
+            color: #A3E635;
+            border-left-color: #A3E635;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            padding: 1.5rem; /* 24px */
+        }
+        .stat-card-icon {
+            background-color: #A3E635;
+            color: #1F2937;
+            border-radius: 50%; /* Make it circular */
+            width: 3rem; /* 48px */
+            height: 3rem; /* 48px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem; /* 20px */
+        }
+        /* For charts container if needed */
+        .chart-container {
+            position: relative;
+            height: 300px; /* Or as desired */
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+    <div class="text-2xl font-bold text-white mb-6 text-center">
+        Admin <span class="accent-text">Panel</span>
+    </div>
+    <nav>
+        <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+        <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+        <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+        <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+        <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+        <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+        <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+        <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a id="logoutLinkSidebar" href="#" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+            <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <h1 class="text-xl font-semibold text-gray-700 ml-2">Dashboard Overview</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="adminWelcomeName" class="text-gray-600">Welcome, Admin!</span>
+            <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">Total Members</p>
+                        <p class="text-3xl font-bold text-gray-800" id="totalMembersStat">0</p>
+                    </div>
+                    <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">Active Classes</p>
+                        <p class="text-3xl font-bold text-gray-800" id="activeClassesStat">0</p>
+                    </div>
+                    <div class="stat-card-icon"><i class="fas fa-calendar-check"></i></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">Revenue (This Month)</p>
+                        <p class="text-3xl font-bold text-gray-800" id="revenueMonthStat">$0.00</p>
+                    </div>
+                    <div class="stat-card-icon"><i class="fas fa-dollar-sign"></i></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">New Signups (Today)</p>
+                        <p class="text-3xl font-bold text-gray-800" id="newSignupsStat">0</p>
+                    </div>
+                    <div class="stat-card-icon"><i class="fas fa-user-plus"></i></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow col-span-1 md:col-span-2">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Recent Member Activity</h3>
+                <ul id="recentActivityList" class="divide-y divide-gray-200">
+                    <li>Loading recent activity...</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <a href="admin_member_list.html#addNewMember" class="block w-full text-center bg-lime-500 hover:bg-lime-600 text-white font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out"><i class="fas fa-user mr-2"></i>See All Members </a>
+                    <a href="admin_class_management.html#addNewClass" class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out"><i class="fas fa-calendar-plus mr-2"></i>Create New Class</a>
+                    <a href="admin_feedback_moderation.html" class="block w-full text-center bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out"><i class="fas fa-bullhorn mr-2"></i>See Feedbacks</a>
+                </div>
+            </div>
+        </div>
+        <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+        </footer>
+    </main>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+    <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+        <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white">
+            <i class="fas fa-times fa-lg"></i>
+        </button>
+        <div class="text-2xl font-bold text-white mb-6 text-center">
+            Admin <span class="accent-text">Panel</span>
+        </div>
+        <nav>
+            <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+            <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+            <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+            <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+            <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+            <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+            <a id="logoutLinkMobileSidebar" href="#" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </nav>
+    </aside>
+</div>
+
+
+<script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    let authToken = null;
+    let currentAdminId = null;
+
+    // DOM Elements for stats
+    const totalMembersEl = document.getElementById('totalMembersStat');
+    const activeClassesEl = document.getElementById('activeClassesStat');
+    const revenueMonthEl = document.getElementById('revenueMonthStat');
+    const newSignupsEl = document.getElementById('newSignupsStat');
+    const adminWelcomeNameEl = document.getElementById('adminWelcomeName');
+    const recentActivityListEl = document.getElementById('recentActivityList');
+
+
+    // Chart instances
+    let membershipChartInstance = null;
+    let attendanceChartInstance = null;
+
+    function checkAdminLoginAndLoadDashboard() {
+        authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        currentAdminId = localStorage.getItem('memberId') || sessionStorage.getItem('memberId');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+        const adminFullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Admin';
+
+
+        if (!authToken || !currentAdminId || userRole !== 'ADMIN') {
+            alert('Access Denied. Admin privileges required. Redirecting to login...');
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '../login.html'; // Adjust path if login.html is in parent directory
+            return;
+        }
+
+        if (adminWelcomeNameEl) {
+            adminWelcomeNameEl.textContent = `Welcome, ${adminFullName.split(' ')[0]}!`;
+        }
+
+        loadDashboardData();
+    }
+
+    async function loadDashboardData() {
+        fetchStats();
+        fetchChartData(); // Call this to render charts
+        fetchRecentActivity();
+    }
+
+    async function fetchStats() {
+        let membersData = null;
+        try {
+            // Fetch Total Members
+            const membersResponse = await fetch(`${API_BASE_URL}/members`, { headers: { 'X-Auth-Token': authToken } });
+            if (membersResponse.ok) {
+                membersData = await membersResponse.json();
+                if (totalMembersEl) totalMembersEl.textContent = membersData.length;
+            } else {
+                if (totalMembersEl) totalMembersEl.textContent = 'N/A';
+                console.error('Failed to fetch total members:', membersResponse.status, await membersResponse.text());
+            }
+
+            // Fetch Active Classes
+            const classesResponse = await fetch(`${API_BASE_URL}/classes/active`, { headers: { 'X-Auth-Token': authToken } });
+            if (classesResponse.ok) {
+                const classes = await classesResponse.json();
+                if (activeClassesEl) activeClassesEl.textContent = classes.length;
+            } else {
+                 if (activeClassesEl) activeClassesEl.textContent = 'N/A';
+                console.error('Failed to fetch active classes:', classesResponse.status, await classesResponse.text());
+            }
+
+            // Fetch Revenue (This Month)
+            if (revenueMonthEl) revenueMonthEl.textContent = '$0.00'; // Reset before fetch
+            const paymentsResponse = await fetch(`${API_BASE_URL}/payments`, { headers: { 'X-Auth-Token': authToken } });
+            if (paymentsResponse.ok) {
+                const payments = await paymentsResponse.json();
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                const monthlyRevenue = payments
+                    .filter(p => {
+                        if (p.status === 'PAID' && p.paymentDate) {
+                            try {
+                                const paymentDateObj = new Date(p.paymentDate);
+                                return paymentDateObj.getMonth() === currentMonth && paymentDateObj.getFullYear() === currentYear;
+                            } catch (e) { console.warn("Date parse error for revenue:", p.paymentDate); return false; }
+                        }
+                        return false;
+                    })
+                    .reduce((sum, p) => sum + p.amount, 0);
+                if (revenueMonthEl) revenueMonthEl.textContent = `Rs.${monthlyRevenue.toFixed(2)}`;
+            } else {
+                 if (revenueMonthEl) revenueMonthEl.textContent = 'N/A';
+                 console.error('Failed to fetch payments for revenue:', paymentsResponse.status, await paymentsResponse.text());
+            }
+
+
+            // New Signups (Today)
+            if (newSignupsEl) newSignupsEl.textContent = '0'; // Reset
+            if (membersData) { // Use membersData if fetched successfully
+                const todayStr = new Date().toISOString().split('T')[0];
+                const todaySignups = membersData.filter(m => m.joinDate === todayStr).length;
+                if (newSignupsEl) newSignupsEl.textContent = todaySignups;
+            } else if (membersResponse && !membersResponse.ok) { // Check original response if membersData is null
+                if (newSignupsEl) newSignupsEl.textContent = 'N/A';
+                console.error('Cannot calculate new signups because fetching members failed earlier.');
+            } else {
+                // Attempt to fetch members again if membersData is null for some other reason
+                // This ensures this stat tries to load even if the first members call had an issue not related to response.ok
+                try {
+                    const fallbackMembersResponse = await fetch(`${API_BASE_URL}/members`, { headers: { 'X-Auth-Token': authToken } });
+                    if (fallbackMembersResponse.ok) {
+                        const fallbackMembers = await fallbackMembersResponse.json();
+                        const todayStr = new Date().toISOString().split('T')[0];
+                        const todaySignups = fallbackMembers.filter(m => m.joinDate === todayStr).length;
+                        if (newSignupsEl) newSignupsEl.textContent = todaySignups;
+                    } else {
+                        if (newSignupsEl) newSignupsEl.textContent = 'N/A';
+                    }
+                } catch (e) {
+                     if (newSignupsEl) newSignupsEl.textContent = 'N/A';
+                     console.error('Fallback member fetch for signups failed:', e);
+                }
+            }
+
+
+        } catch (error) { // Catch errors from any await operation above
+            console.error('Error in fetchStats:', error);
+            if (totalMembersEl) totalMembersEl.textContent = 'Error';
+            if (activeClassesEl) activeClassesEl.textContent = 'Error';
+            if (revenueMonthEl) revenueMonthEl.textContent = 'Error';
+            if (newSignupsEl) newSignupsEl.textContent = 'Error';
+        }
+    }
+
+    async function fetchChartData() {
+        const membershipCtx = document.getElementById('membershipChart')?.getContext('2d');
+        if (membershipCtx) {
+            if (membershipChartInstance) membershipChartInstance.destroy();
+            // Placeholder data, replace with actual API call
+            // const membersGrowthData = await (await fetch(`${API_BASE_URL}/stats/members-growth`, { headers: { 'X-Auth-Token': authToken }})).json();
+            membershipChartInstance = new Chart(membershipCtx, {
+                type: 'line',
+                data: { // Mock data
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'New Members', data: [10, 12, 15, 20, 18, 25, 22],
+                        fill: true, borderColor: '#A3E635', backgroundColor: 'rgba(163, 230, 53, 0.2)', tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        const attendanceCtx = document.getElementById('attendanceChart')?.getContext('2d');
+        if (attendanceCtx) {
+            if (attendanceChartInstance) attendanceChartInstance.destroy();
+            // Placeholder data, replace with actual API call
+            // const attendanceStatsData = await (await fetch(`${API_BASE_URL}/stats/avg-attendance`, { headers: { 'X-Auth-Token': authToken }})).json();
+            attendanceChartInstance = new Chart(attendanceCtx, {
+                type: 'bar',
+                data: { // Mock data
+                    labels: ['Yoga', 'HIIT', 'Cycling', 'Strength', 'Zumba'],
+                    datasets: [{
+                        label: 'Avg. Attendance This Week', data: [22, 18, 15, 12, 25],
+                        backgroundColor: ['rgba(163,230,53,0.6)','rgba(59,130,246,0.6)','rgba(239,68,68,0.6)','rgba(245,158,11,0.6)','rgba(139,92,246,0.6)'],
+                        borderColor: ['#A3E635','#3B82F6','#EF4444','#F59E0B','#8B5CF6'], borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+            });
+        }
+    }
+
+    async function fetchRecentActivity() {
+        if (!recentActivityListEl) return;
+        recentActivityListEl.innerHTML = '<li>Loading recent activity...</li>';
+        try {
+            // Fetch last 5 attendance records, sorted by checkInTimestamp descending
+            const response = await fetch(`${API_BASE_URL}/attendance?_sort=checkInTimestamp&_order=desc&_limit=5`, { // This is a common query param pattern
+                headers: { 'X-Auth-Token': authToken }
+            });
+            if (!response.ok) throw new Error("Failed to fetch recent activity. Status: " + response.status);
+
+            let activities = await response.json();
+
+            // If the backend doesn't support sorting/limiting via query params, you'll have to sort and slice client-side
+            // For example, if /api/attendance returns ALL attendance records:
+            // activities.sort((a, b) => new Date(b.checkInTimestamp) - new Date(a.checkInTimestamp));
+            // activities = activities.slice(0, 5);
+
+
+            if (activities.length > 0) {
+                recentActivityListEl.innerHTML = activities.map(act => {
+                    let activityText = `<span class="font-medium">${act.memberName || act.memberId}</span> checked in`;
+                    if(act.className) activityText += ` for ${act.className}`;
+
+                    let timeAgo = 'Recently';
+                    try {
+                        const actDate = new Date(act.checkInTimestamp);
+                        const now = new Date();
+                        const diffMs = now - actDate;
+                        const diffMins = Math.round(diffMs / 60000);
+                        if (diffMins < 1) timeAgo = "Just now";
+                        else if (diffMins < 60) timeAgo = `${diffMins} min ago`;
+                        else if (diffMins < 1440) timeAgo = `${Math.floor(diffMins/60)} hr ago`;
+                        else timeAgo = `${Math.floor(diffMins/1440)} day(s) ago`;
+                    } catch(e) { console.warn("Error parsing activity date", act.checkInTimestamp); }
+
+                    return `<li class="py-3 flex items-center justify-between">
+                                <p>${activityText}.</p>
+                                <span class="text-xs text-gray-500">${timeAgo}</span>
+                            </li>`;
+                }).join('');
+            } else {
+                recentActivityListEl.innerHTML = '<li>No recent member activity to display.</li>';
+            }
+        } catch (error) {
+            console.error("Error fetching recent activity:", error);
+            recentActivityListEl.innerHTML = '<li>Could not load recent activity.</li>';
+        }
+    }
+
+    // Sidebar Toggle for mobile
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+    const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+
+    if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+        sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+        closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    }
+
+    // Set current year in footer
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+
+    function performLogout(e) {
+        e.preventDefault();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '../login.html'; // Adjust path from admin folder to root login
+    }
+
+    // Logout buttons
+    const logoutBtnSidebar = document.getElementById('logoutLinkSidebar');
+    if (logoutBtnSidebar) logoutBtnSidebar.addEventListener('click', performLogout);
+    const logoutBtnMobileSidebar = document.getElementById('logoutLinkMobileSidebar');
+    if (logoutBtnMobileSidebar) logoutBtnMobileSidebar.addEventListener('click', performLogout);
+
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', checkAdminLoginAndLoadDashboard);
+</script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Attendance Reports - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .accent-text { color: #A3E635; }
+        .sidebar { background-color: #1F2937; color: #e5e7eb; }
+        .sidebar a { transition: background-color 0.2s ease, color 0.2s ease; border-left: 3px solid transparent; }
+        .sidebar a:hover, .sidebar a.active { background-color: #374151; color: #A3E635; border-left-color: #A3E635; }
+        .table-header { background-color: #111827; color: white; }
+        .table-cell { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }
+        .form-input { border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.5rem 1rem; width: 100%; }
+        .form-input:focus { border-color: #A3E635; box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.3); outline: none; }
+        .stat-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 1.5rem; }
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+    <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+    <nav>
+        <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+        <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+        <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+        <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+        <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+        <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+        <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+        <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a id="logoutLinkSidebar" href="../index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+            <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+            <h1 class="text-xl font-semibold text-gray-700 ml-2">Attendance Reports</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-gray-600">Admin</span>
+            <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">View Attendance</h2>
+            <button id="exportReportBtn" class="bg-lime-500 hover:bg-lime-600 text-white font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out text-sm">
+                <i class="fas fa-file-export mr-2"></i>Export Report
+            </button>
+        </div>
+
+        <div class="mb-6 bg-white p-4 rounded-lg shadow">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label for="dateStart" class="block text-sm font-medium text-gray-700 mb-1">Date Range Start</label>
+                    <input type="date" id="dateStart" class="form-input text-sm">
+                </div>
+                <div>
+                    <label for="dateEnd" class="block text-sm font-medium text-gray-700 mb-1">Date Range End</label>
+                    <input type="date" id="dateEnd" class="form-input text-sm">
+                </div>
+                <div>
+                    <label for="memberSearch" class="block text-sm font-medium text-gray-700 mb-1">Member ID/Name</label>
+                    <input type="text" id="memberSearch" placeholder="Search Member..." class="form-input text-sm">
+                </div>
+                <div>
+                    <label for="classFilter" class="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                    <select id="classFilter" class="form-input text-sm">
+                        <option value="">All Classes</option>
+                    </select>
+                </div>
+                <button id="applyFiltersBtn" class="md:col-start-4 bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-150 ease-in-out">Apply Filters</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div class="stat-card">
+                <p class="text-sm font-medium text-gray-500 uppercase">Total Check-Ins (Period)</p>
+                <p class="text-3xl font-bold text-gray-800" id="totalCheckIns">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="text-sm font-medium text-gray-500 uppercase">Unique Members (Period)</p>
+                <p class="text-3xl font-bold text-gray-800" id="uniqueMembers">0</p>
+            </div>
+            <div class="stat-card">
+                <p class="text-sm font-medium text-gray-500 uppercase">Busiest Day</p>
+                <p class="text-3xl font-bold text-gray-800" id="busiestDay">N/A</p>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-lg overflow-x-auto mb-6">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="table-header">
+                <tr>
+                    <th class="table-cell text-left">Date</th>
+                    <th class="table-cell text-left">Time</th>
+                    <th class="table-cell text-left">Member ID</th>
+                    <th class="table-cell text-left">Member Name</th>
+                    <th class="table-cell text-left">Class (If any)</th>
+                    <th class="table-cell text-center">Check-In Method</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="attendanceTableBody">
+                </tbody>
+            </table>
+        </div>
+        <p id="noAttendanceMessage" class="text-center text-gray-500 mt-8 hidden">No attendance records match your criteria for the selected period.</p>
+
+
+        <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+        </footer>
+    </main>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+    <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+        <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fas fa-times fa-lg"></i></button>
+        <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+        <nav>
+            <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+            <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+            <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+            <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+            <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+            <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+            <a href="../index.html" class="block py-2.5 px-4 rounded"><i class="fas fa-cog mr-2"></i>Settings</a> <a id="mobileLogoutLinkSidebar" href="../index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </nav>
+    </aside>
+</div>
+
+<script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if needed
+
+    let authToken = null;
+    let allAttendanceData = []; // This will store the fetched data
+    let attendanceChartInstance = null;
+
+    // DOM Elements
+    const attendanceTableBody = document.getElementById('attendanceTableBody');
+    const noAttendanceMessage = document.getElementById('noAttendanceMessage');
+    const totalCheckInsEl = document.getElementById('totalCheckIns');
+    const uniqueMembersEl = document.getElementById('uniqueMembers');
+    const busiestDayEl = document.getElementById('busiestDay');
+
+    // Filter Elements
+    const dateStartInput = document.getElementById('dateStart');
+    const dateEndInput = document.getElementById('dateEnd');
+    const memberSearchInput = document.getElementById('memberSearch');
+    const classFilterSelect = document.getElementById('classFilter');
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+    const exportReportBtn = document.getElementById('exportReportBtn');
+
+
+    function checkAdminLoginAndLoadAttendance() {
+        authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+        if (!authToken || userRole !== 'ADMIN') {
+            alert('Access Denied. Admin privileges required. Redirecting to login...');
+            localStorage.clear(); sessionStorage.clear();
+            window.location.href = '../login.html'; // Adjust path as necessary
+            return;
+        }
+        const welcomeSpan = document.querySelector('header div.flex.items-center.space-x-4 > span.text-gray-600');
+        const adminName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Admin';
+        if (welcomeSpan) welcomeSpan.textContent = `Welcome, ${adminName.split(' ')[0]}!`;
+
+        const today = new Date();
+        const sevenDaysAgo = new Date(today); // Keep a reference to today for start date calculation
+        sevenDaysAgo.setDate(today.getDate() - 7);
+
+        // Calculate tomorrow's date for the end date
+        const tomorrow = new Date(today); // Create a new date object based on today
+        tomorrow.setDate(today.getDate() + 1); // Increment the day by 1
+
+        if (dateStartInput) dateStartInput.valueAsDate = sevenDaysAgo;
+        if (dateEndInput) dateEndInput.valueAsDate = tomorrow; // Set the end date to tomorrow
+
+        populateClassFilter();
+        fetchAndDisplayData(); // Initial fetch
+    }
+
+    async function populateClassFilter() {
+        if (!classFilterSelect || !authToken) return;
+        try {
+            const response = await fetch(`${API_BASE_URL}/classes`, { headers: { 'X-Auth-Token': authToken }});
+            if (response.ok) {
+                const classes = await response.json();
+                classFilterSelect.innerHTML = '<option value="">All Classes</option>'; // Reset
+                classes.forEach(cls => {
+                    if(cls.status === 'active'){ // Only show active classes in filter
+                        const option = document.createElement('option');
+                        option.value = cls.id;
+                        option.textContent = cls.name;
+                        classFilterSelect.appendChild(option);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Error populating class filter:", error);
+        }
+    }
+
+    async function fetchAndDisplayData() {
+        if (!authToken) return;
+        if (attendanceTableBody) attendanceTableBody.innerHTML = `<tr><td colspan="6" class="table-cell text-center">Loading attendance records...</td></tr>`;
+        if (noAttendanceMessage) noAttendanceMessage.classList.add('hidden');
+
+        const startDate = dateStartInput ? dateStartInput.value : null;
+        const endDate = dateEndInput ? dateEndInput.value : null;
+        const memberQuery = memberSearchInput ? memberSearchInput.value.trim() : ""; // Use memberSearchInput
+        const classIdQuery = classFilterSelect ? classFilterSelect.value : "";
+
+        let queryParams = new URLSearchParams();
+        if (startDate) queryParams.append('startDate', new Date(startDate).toISOString().split('T')[0] + 'T00:00:00.000Z');
+        if (endDate) {
+            const endOfDay = new Date(endDate);
+            endOfDay.setHours(23, 59, 59, 999);
+            queryParams.append('endDate', endOfDay.toISOString());
+        }
+        // For member search, the backend AttendanceController expects 'memberId'.
+        // If you want to search by name, the backend needs to support it.
+        // For now, assuming memberQuery could be an ID or you'll filter client-side if it's a name.
+        if (memberQuery) queryParams.append('memberId', memberQuery);
+        if (classIdQuery) queryParams.append('classId', classIdQuery);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/attendance?${queryParams.toString()}`, {
+                headers: { 'X-Auth-Token': authToken }
+            });
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                     alert('Session expired or invalid. Please log in again.');
+                     window.location.href = '../login.html'; // Adjust path
+                }
+                throw new Error(`Failed to fetch attendance: ${response.statusText}`);
+            }
+            let rawAttendanceData = await response.json();
+
+            // *** MODIFICATION FOR SORTING: Sort data by checkInTimestamp descending ***
+            allAttendanceData = rawAttendanceData.sort((a, b) => {
+                // Convert timestamps to Date objects for reliable comparison
+                const dateA = new Date(a.checkInTimestamp);
+                const dateB = new Date(b.checkInTimestamp);
+                return dateB - dateA; // For descending order (latest first)
+            });
+            // *** END OF MODIFICATION ***
+
+            renderAttendanceTable(allAttendanceData); // Pass the sorted data
+            updateSummaryStats(allAttendanceData);
+            renderAttendanceChart(allAttendanceData); // Chart data might also need sorting if time-series
+
+        } catch (error) {
+            console.error('Error fetching attendance data:', error);
+            if (noAttendanceMessage) {
+                noAttendanceMessage.textContent = `Could not load attendance records. ${error.message}`;
+                noAttendanceMessage.classList.remove('hidden');
+            }
+            if (attendanceTableBody) attendanceTableBody.innerHTML = `<tr><td colspan="6" class="table-cell text-center text-red-500">Error loading records.</td></tr>`;
+            updateSummaryStats([]);
+            renderAttendanceChart([]); // Pass empty array to clear or show error on chart
+        }
+    }
+
+    function renderAttendanceTable(data) {
+        if (!attendanceTableBody) return;
+        attendanceTableBody.innerHTML = ''; // Clear existing rows
+
+        if (data.length === 0) {
+            if (noAttendanceMessage) {
+                noAttendanceMessage.textContent = 'No attendance records match your criteria for the selected period.';
+                noAttendanceMessage.classList.remove('hidden');
+            }
+            return; // Exit if no data
+        } else {
+            if (noAttendanceMessage) noAttendanceMessage.classList.add('hidden');
+        }
+
+        data.forEach(record => {
+            let displayCheckInTime = record.checkInTimestamp;
+            let displayDate = record.checkInTimestamp;
+            try {
+                const recordDate = new Date(record.checkInTimestamp);
+                // Format time to be more readable, e.g., 10:30 AM
+                displayCheckInTime = recordDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                // Format date as YYYY-MM-DD or any preferred format
+                displayDate = recordDate.toLocaleDateString('en-CA'); // Example: 2023-10-27
+            } catch(e) {
+                console.warn("Date parsing error for record:", record.checkInTimestamp, e);
+                // Keep original timestamp if parsing fails
+            }
+
+            const row = `
+                <tr>
+                    <td class="table-cell text-gray-900">${displayDate}</td>
+                    <td class="table-cell text-gray-500">${displayCheckInTime}</td>
+                    <td class="table-cell text-gray-500">${record.memberId}</td>
+                    <td class="table-cell font-medium text-gray-900">${record.memberName}</td>
+                    <td class="table-cell text-gray-500">${record.className || 'General Check-in'}</td>
+                    <td class="table-cell text-center text-gray-500">${record.checkInMethod}</td>
+                </tr>
+            `;
+            attendanceTableBody.innerHTML += row;
+        });
+    }
+
+    function updateSummaryStats(data) {
+        if(totalCheckInsEl) totalCheckInsEl.textContent = data.length;
+
+        const uniqueMemberIds = new Set(data.map(item => item.memberId));
+        if(uniqueMembersEl) uniqueMembersEl.textContent = uniqueMemberIds.size;
+
+        if (data.length > 0) {
+            const dayCounts = data.reduce((acc, record) => {
+                try { // Add try-catch for date parsing
+                    const day = new Date(record.checkInTimestamp).toLocaleDateString('en-US', { weekday: 'short' });
+                    acc[day] = (acc[day] || 0) + 1;
+                } catch (e) {
+                    console.warn("Error parsing day for busiestDay stat:", record.checkInTimestamp, e);
+                }
+                return acc;
+            }, {});
+            // Find the day with the highest count
+            const busiest = Object.entries(dayCounts).sort((a,b) => b[1] - a[1])[0]; // [day, count]
+            if(busiestDayEl) busiestDayEl.textContent = busiest ? `${busiest[0]} (${busiest[1]})` : 'N/A';
+        } else {
+            if(busiestDayEl) busiestDayEl.textContent = 'N/A';
+        }
+    }
+
+    function renderAttendanceChart(data) {
+        const canvas = document.getElementById('attendanceChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Aggregate data for the chart (e.g., daily check-ins)
+        // Ensure data is sorted by date if it's a time-series chart
+        const dailyCounts = data.reduce((acc, record) => {
+            try { // Add try-catch for date parsing
+                const dateKey = new Date(record.checkInTimestamp).toLocaleDateString('en-CA'); // YYYY-MM-DD for sorting
+                acc[dateKey] = (acc[dateKey] || 0) + 1;
+            } catch (e) {
+                console.warn("Error parsing date for chart:", record.checkInTimestamp, e);
+            }
+            return acc;
+        }, {});
+
+        const sortedDates = Object.keys(dailyCounts).sort((a,b) => new Date(a) - new Date(b)); // Sort dates chronologically for chart
+        const chartLabels = sortedDates.map(date => new Date(date).toLocaleDateString('en-US', {month:'short', day:'numeric'})); // Format for display
+        const chartDataPoints = sortedDates.map(date => dailyCounts[date]);
+
+        if (attendanceChartInstance) {
+            attendanceChartInstance.destroy(); // Destroy previous instance
+        }
+        attendanceChartInstance = new Chart(ctx, {
+            type: 'line', // Or 'bar', 'pie', etc.
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Daily Check-Ins',
+                    data: chartDataPoints,
+                    borderColor: '#A3E635', // Your accent color
+                    backgroundColor: 'rgba(163, 230, 53, 0.1)', // Light fill
+                    tension: 0.3, // Makes the line slightly curved
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(...chartDataPoints, 0) + 5, // Add some padding to y-axis
+                        ticks: { // Ensure y-axis ticks are integers
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Event Listeners
+    if(applyFiltersBtn) applyFiltersBtn.addEventListener('click', fetchAndDisplayData);
+
+    if(exportReportBtn){
+        exportReportBtn.addEventListener('click', () => {
+            if(allAttendanceData.length === 0){
+                alert("No data to export. Please filter data first.");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Add headers
+            csvContent += "Date,Time,Member ID,Member Name,Class Attended,Check-In Method\n";
+            // Add rows
+            allAttendanceData.forEach(row => {
+                let displayCheckInTime = row.checkInTimestamp;
+                let displayDate = row.checkInTimestamp;
+                 try {
+                    const d = new Date(row.checkInTimestamp);
+                    displayCheckInTime = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); // 24hr format for CSV consistency
+                    displayDate = d.toLocaleDateString('en-CA'); // YYYY-MM-DD
+                } catch(e) {}
+                csvContent += `${displayDate},${displayCheckInTime},${row.memberId},"${row.memberName}",${row.className || ''},${row.checkInMethod}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "attendance_report.csv");
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+
+
+    // Sidebar Toggle & common elements (ensure this is correctly implemented in your file)
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+    const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+
+    if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+        sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+        closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    }
+
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) currentYearElement.textContent = new Date().getFullYear();
+
+    // Logout functionality (ensure this is correctly implemented)
+    const logoutLinkSidebar = document.getElementById('logoutLinkSidebar');
+    const mobileLogoutLinkSidebar = document.getElementById('mobileLogoutLinkSidebar');
+    function handleLogout(e) {
+        e.preventDefault();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '../login.html'; // Adjust path
+    }
+    if(logoutLinkSidebar) logoutLinkSidebar.addEventListener('click', handleLogout);
+    if(mobileLogoutLinkSidebar) mobileLogoutLinkSidebar.addEventListener('click', handleLogout);
+
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', checkAdminLoginAndLoadAttendance);
+</script>
+</body>
+</html>

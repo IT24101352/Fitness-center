@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Plan Management - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Gray 100 */
+        }
+        .accent-text {
+            color: #A3E635; /* Lime Green */
+        }
+        .sidebar {
+            background-color: #1F2937; /* Dark Gray */
+            color: #e5e7eb; /* Gray 200 */
+        }
+        .sidebar a {
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #374151; /* Lighter Dark Gray */
+            color: #A3E635;
+            border-left-color: #A3E635;
+        }
+        .table-header {
+            background-color: #111827;
+            color: white;
+        }
+        .table-cell {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 0.375rem;
+        }
+        .btn-edit { background-color: #3B82F6; color: white; }
+        .btn-edit:hover { background-color: #2563EB; }
+        .btn-delete { background-color: #EF4444; color: white; }
+        .btn-delete:hover { background-color: #DC2626; }
+        .btn-primary-admin {
+            background-color: #A3E635;
+            color: #1F2937;
+            font-weight: 600;
+        }
+        .btn-primary-admin:hover {
+            background-color: #82c000;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Dim background */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .form-input {
+            border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.75rem 1rem; width: 100%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-input:focus { border-color: #A3E635; box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.3); outline: none; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151; }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover, .close-button:focus { color: black; text-decoration: none; }
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="sidebar w-64 min-h-screen p-4 space-y-2 hidden md:block">
+    <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+    <nav>
+        <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+        <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+        <a href="admin_booked_classes_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-check mr-2"></i>All Bookings</a>
+        <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+        <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+        <a href="admin_attendance_report.html" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+        <a href="admin_billing_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+        <a href="admin_feedback_moderation.html" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a id="logoutLinkSidebar" href="../index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+    </nav>
+</aside>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+            <button id="sidebarToggle" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+            <h1 class="text-xl font-semibold text-gray-700 ml-2">Membership Plan Management</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-gray-600">Admin</span>
+            <img src="https://placehold.co/40x40/A3E635/1F2937?text=A" alt="Admin Avatar" class="rounded-full">
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Manage Plans</h2>
+            <button id="addPlanBtn" class="btn-primary-admin py-2 px-4 rounded-md transition duration-150 ease-in-out text-sm">
+                <i class="fas fa-plus mr-2"></i>Add New Plan
+            </button>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-lg overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="table-header">
+                <tr>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Plan ID</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Plan Name</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Price ($/month)</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Duration</th>
+                    <th scope="col" class="table-cell text-left uppercase tracking-wider">Status</th>
+                    <th scope="col" class="table-cell text-center uppercase tracking-wider">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="plansTableBody">
+                </tbody>
+            </table>
+        </div>
+        <p id="noPlansMessage" class="text-center text-gray-500 mt-8 hidden">No membership plans found. Add one to get started!</p>
+        <footer class="pt-10 pb-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> Fitness Center Admin. All Rights Reserved.</p>
+        </footer>
+    </main>
+</div>
+
+<div id="planModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="closeModalBtn">&times;</span>
+        <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-6">Add New Plan</h3>
+        <form id="planForm" class="space-y-6">
+            <input type="hidden" id="planId" name="planId">
+            <div>
+                <label for="planName" class="form-label">Plan Name</label>
+                <input type="text" id="planName" name="planName" class="form-input" required placeholder="e.g., Premium Plus">
+            </div>
+            <div>
+                <label for="planPrice" class="form-label">Price (LKR per month)</label>
+                <input type="number" id="planPrice" name="planPrice" class="form-input" step="0.01" min="0" required placeholder="e.g., 59.00">
+            </div>
+            <div>
+                <label for="planDuration" class="form-label">Duration</label>
+                <input type="text" id="planDuration" name="planDuration" class="form-input" required placeholder="e.g., Monthly, Yearly, 3 Months">
+            </div>
+            <div>
+                <label for="planDescription" class="form-label">Description / Features (comma-separated)</label>
+                <textarea id="planDescription" name="planDescription" rows="3" class="form-input" placeholder="e.g., Full gym access, Unlimited classes, Personal trainer consultation"></textarea>
+            </div>
+            <div>
+                <label for="planStatus" class="form-label">Status</label>
+                <select id="planStatus" name="planStatus" class="form-input">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" id="cancelModalBtn" class="py-2 px-4 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">Cancel</button>
+                <button type="submit" class="py-2 px-4 btn-primary-admin rounded-md transition">Save Plan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="mobileSidebar" class="fixed inset-0 flex z-40 md:hidden hidden">
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black opacity-50"></div>
+    <aside class="sidebar w-64 min-h-screen p-4 space-y-2 relative z-10">
+        <button id="closeMobileSidebar" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fas fa-times fa-lg"></i></button>
+        <div class="text-2xl font-bold text-white mb-6 text-center">Admin <span class="accent-text">Panel</span></div>
+        <nav>
+            <a href="admin_dashboard.html" class="block py-2.5 px-4 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <a href="admin_member_list.html" class="block py-2.5 px-4 rounded"><i class="fas fa-users mr-2"></i>Members</a>
+            <a href="admin_plan_management.html" class="block py-2.5 px-4 rounded active"><i class="fas fa-clipboard-list mr-2"></i>Plans</a>
+            <a href="admin_class_management.html" class="block py-2.5 px-4 rounded"><i class="fas fa-calendar-alt mr-2"></i>Classes</a>
+            <a href="#attendance" class="block py-2.5 px-4 rounded"><i class="fas fa-user-check mr-2"></i>Attendance</a>
+            <a href="#billing" class="block py-2.5 px-4 rounded"><i class="fas fa-file-invoice-dollar mr-2"></i>Billing</a>
+            <a href="#feedback" class="block py-2.5 px-4 rounded"><i class="fas fa-comments mr-2"></i>Feedback</a>
+            <a href="#settings" class="block py-2.5 px-4 rounded"><i class="fas fa-cog mr-2"></i>Settings</a>
+            <a href="index.html" class="block py-2.5 px-4 rounded mt-8 border-t border-gray-700 pt-4"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </nav>
+    </aside>
+</div>
+
+
+<script>
+    // API Base URL - Make sure this matches your Spring Boot application's port
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Global variable to hold plans fetched from the server
+    let plansData = []; // This will now be populated by API calls
+
+    // DOM Elements
+    const plansTableBody = document.getElementById('plansTableBody');
+    const noPlansMessage = document.getElementById('noPlansMessage');
+    const planModal = document.getElementById('planModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const planForm = document.getElementById('planForm');
+    const addPlanBtn = document.getElementById('addPlanBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+
+    // --- Authentication Token (if your API is secured) ---
+    // You'll need to get this from localStorage/sessionStorage after admin login
+    // For simplicity in this example, I'll assume it's available if needed.
+    // const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+
+    // Function to fetch plans from the backend
+    async function fetchPlans() {
+        if (!plansTableBody || !noPlansMessage) return;
+        plansTableBody.innerHTML = `<tr><td colspan="6" class="table-cell text-center">Loading plans...</td></tr>`;
+        noPlansMessage.classList.add('hidden');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/plans`
+              // If your API requires authentication for GET requests to plans, add headers:
+              // , { headers: { 'X-Auth-Token': authToken } }
+            );
+            if (!response.ok) {
+                // Handle errors, e.g., unauthorized, server error
+                if (response.status === 401 || response.status === 403) {
+                     alert('Session expired or unauthorized. Please log in again.');
+                     // window.location.href = '../login.html'; // Redirect to login
+                }
+                throw new Error(`Failed to fetch plans: ${response.statusText} (${response.status})`);
+            }
+            plansData = await response.json(); // Update the global plansData with server data
+            renderPlans(); // Re-render the table with the fetched data
+        } catch (error) {
+            console.error('Error fetching plans:', error);
+            noPlansMessage.textContent = `Could not load plans. ${error.message}`;
+            noPlansMessage.classList.remove('hidden');
+            plansTableBody.innerHTML = `<tr><td colspan="6" class="table-cell text-center text-red-500">Error loading plans.</td></tr>`;
+        }
+    }
+
+    // Function to render plans in the table
+    function renderPlans() {
+        if (!plansTableBody) return;
+        plansTableBody.innerHTML = ''; // Clear existing rows
+
+        if (plansData.length === 0) {
+            noPlansMessage.classList.remove('hidden');
+        } else {
+            noPlansMessage.classList.add('hidden');
+        }
+
+        plansData.forEach(plan => {
+            const statusBadge = plan.status === 'active'
+                ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>`
+                : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>`;
+            const row = `
+                <tr>
+                    <td class="table-cell text-gray-900">${plan.id}</td>
+                    <td class="table-cell font-medium text-gray-900">${plan.name}</td>
+                    <td class="table-cell text-gray-500">Rs.${plan.price.toFixed(2)}</td>
+                    <td class="table-cell text-gray-500">${plan.duration}</td>
+                    <td class="table-cell">${statusBadge}</td>
+                    <td class="table-cell text-center space-x-1">
+                        <button class="btn-sm btn-edit" title="Edit Plan" onclick="openEditModal('${plan.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn-sm btn-delete" title="Delete Plan" onclick="deletePlan('${plan.id}', '${plan.name}')"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `;
+            plansTableBody.innerHTML += row;
+        });
+    }
+
+    // Function to open the modal for adding or editing
+    function openModal(mode = 'add', planIdToEdit = null) {
+        planForm.reset();
+        document.getElementById('planId').value = ''; // Clear hidden ID field
+
+        if (mode === 'add') {
+            modalTitle.textContent = 'Add New Plan';
+            document.getElementById('planStatus').value = 'active'; // Default status
+        } else if (mode === 'edit' && planIdToEdit) {
+            modalTitle.textContent = 'Edit Plan';
+            // Find the plan from the server-fetched plansData
+            const plan = plansData.find(p => p.id === planIdToEdit);
+            if (plan) {
+                document.getElementById('planId').value = plan.id;
+                document.getElementById('planName').value = plan.name;
+                document.getElementById('planPrice').value = plan.price;
+                document.getElementById('planDuration').value = plan.duration;
+                document.getElementById('planDescription').value = plan.description;
+                document.getElementById('planStatus').value = plan.status;
+            } else {
+                alert('Could not find plan details to edit. Please refresh the page.');
+                closeModal();
+                return;
+            }
+        }
+        planModal.style.display = 'block';
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        planModal.style.display = 'none';
+    }
+
+    // Event listeners for modal controls
+    addPlanBtn.addEventListener('click', () => openModal('add'));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelModalBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (event) => {
+        if (event.target == planModal) {
+            closeModal();
+        }
+    });
+
+    // Handle form submission (for both add and edit)
+    planForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const id = document.getElementById('planId').value;
+        const name = document.getElementById('planName').value;
+        const price = parseFloat(document.getElementById('planPrice').value);
+        const duration = document.getElementById('planDuration').value;
+        const description = document.getElementById('planDescription').value;
+        const status = document.getElementById('planStatus').value;
+
+        // Basic validation (you can add more)
+        if (!name || price <= 0 || !duration) {
+            alert("Plan Name, Price (>0), and Duration are required.");
+            return;
+        }
+
+        const planPayload = {
+            // ID is only sent for updates, backend service generates it for new plans
+            id: id || undefined,
+            name,
+            price,
+            duration,
+            description,
+            status
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_BASE_URL}/plans/${id}` : `${API_BASE_URL}/plans`;
+        // const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken'); // Get token if needed
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-Auth-Token': authToken // Add if your API requires authentication
+                },
+                body: JSON.stringify(planPayload)
+            });
+
+            if (response.ok) {
+                // const result = await response.json(); // The created or updated plan
+                alert(`Plan ${id ? 'updated' : 'added'} successfully!`);
+                fetchPlans(); // Refresh data from server
+                closeModal();
+            } else {
+                const errorText = await response.text();
+                alert(`Failed to save plan: ${errorText || response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Error saving plan:', error);
+            alert('An error occurred while saving the plan. Check console for details.');
+        }
+    });
+
+    // Make openEditModal globally accessible for inline onclick
+    window.openEditModal = (planId) => {
+        // The plan data for editing will be sourced from the `plansData` array,
+        // which should be up-to-date from `WorkspacePlans()`.
+        openModal('edit', planId);
+    }
+
+    // Make deletePlan globally accessible and call backend
+    window.deletePlan = async (planId, planName) => {
+        if (confirm(`Are you sure you want to delete the plan "${planName}" (ID: ${planId})? This action cannot be undone.`)) {
+          // const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken'); // Get token if needed
+          try {
+              const response = await fetch(`${API_BASE_URL}/plans/${planId}`, {
+                  method: 'DELETE',
+                  headers: {
+                      // 'X-Auth-Token': authToken // Add if your API requires authentication
+                  }
+              });
+              if (response.ok || response.status === 204) { // 204 No Content is also success for DELETE
+                  alert(`Plan "${planName}" deleted successfully.`);
+                  fetchPlans(); // Refresh data from server
+              } else {
+                  const errorText = await response.text();
+                  alert(`Failed to delete plan: ${errorText || response.statusText}`);
+              }
+          } catch (error) {
+              console.error('Error deleting plan:', error);
+              alert('An error occurred while deleting the plan. Check console for details.');
+          }
+        }
+    }
+
+    // Sidebar Toggle for mobile (copied from your existing script)
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+    const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+
+    if (sidebarToggle && mobileSidebar && mobileSidebarOverlay && closeMobileSidebar) {
+        sidebarToggle.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        mobileSidebarOverlay.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+        closeMobileSidebar.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    }
+
+    // Set current year in footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Initial Load - Fetch plans from the backend when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        // Here, you would typically check if the admin is logged in and has a valid token.
+        // For simplicity, this example directly calls fetchPlans.
+        // Implement your authentication check here.
+        // Example:
+        // const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        // if (!authToken) {
+        //     alert('Please log in as admin.');
+        //     window.location.href = '../login.html'; // Redirect to login
+        //     return;
+        // }
+        fetchPlans();
+
+
+        // Logout functionality (example)
+        const logoutLinkSidebar = document.getElementById('logoutLinkSidebar');
+        if(logoutLinkSidebar) {
+          logoutLinkSidebar.addEventListener('click', (e) => {
+              e.preventDefault();
+              // Perform logout actions: clear token, redirect
+              // localStorage.removeItem('authToken');
+              // sessionStorage.removeItem('authToken');
+              // window.location.href = '../login.html';
+              alert("Logout clicked - implement actual logout logic");
+          });
+        }
+    });
+</script>
+</body>
+</html>
