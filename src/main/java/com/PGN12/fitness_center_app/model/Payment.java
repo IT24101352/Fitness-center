@@ -19,7 +19,7 @@ public class Payment {
     private String memberName; // Denormalized for easier display
     private String planId; // ID of the membership plan this payment is for
     private String planName; // Denormalized plan name
-    private String description;// e.g., "Monthly Subscription - Premium Plus", "Personal Training Session"
+    private String description; // e.g., "Monthly Subscription - Premium Plus", "Personal Training Session"
     private double amount;
     private String currency; // e.g., "USD", "LKR" - default to USD for now
     private String issueDate; // Date the invoice was generated or payment was due (ISO_LOCAL_DATE format)
