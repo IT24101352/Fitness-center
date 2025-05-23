@@ -21,7 +21,7 @@ public class Booking {
     private String bookingTimestamp; // When the booking was made (ISO_LOCAL_DATE_TIME format)
     private String status; // e.g., "CONFIRMED", "CANCELLED_MEMBER", "CANCELLED_ADMIN"
 
-    // Optional: Add class details if you want to denormalize for easier display of "my bookings"
+    // Optional: Add class details if want to denormalize for easier display of "my bookings"
     // private String className;
     // private String classDay;
     // private String classTime;
