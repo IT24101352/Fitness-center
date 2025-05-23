@@ -1,4 +1,4 @@
-CLS9CB926|Morning Yoga Flow	|Malithi Kariyawasm |monday|08:00|60|20|1|yoga|A gentle morning yoga session focusing on relaxation, flexibility, and mindfulness.|active
+CLS9CB926|Morning Yoga Flow	|Malithi Kariyawasm |monday|08:00|60|20|2|yoga|A gentle morning yoga session focusing on relaxation, flexibility, and mindfulness.|active
 CLS09E921|Cycling Power Hour	|Hemanta Kumara|friday|07:00|50|18|2|cycling|An energetic indoor cycling class designed to improve cardiovascular fitness and stamina.|active
 CLS20E51E|HIIT Blast|Lahiru Nuwan|tuesday|17:30|30|25|1|hiit|High-Intensity Interval Training to boost metabolism and burn calories quickly.|active
 CLS3A2A61|Zumba Dance Party|Nethuni Gunasekara|sunday|19:00|55|22|1|zumba|A lively, dance-based cardio workout combining fun music and easy-to-follow moves.|active
