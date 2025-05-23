@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Check-In Kiosk - Fitness Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111827; /* Dark background for kiosk */
+        color: #f9fafb; /* Light text */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+        overflow: hidden; /* Prevent scrollbars on kiosk */
+    }
+    .accent-text {
+        color: #A3E635; /* Lime Green */
+    }
+    .kiosk-container {
+        background-color: #1F2937; /* Slightly lighter dark */
+        padding: 2rem;
+        border-radius: 1rem; /* 16px */
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        width: 100%;
+        max-width: 480px; /* Optimal for kiosk view */
+        text-align: center;
+    }
+    .btn-kiosk {
+        background-color: #A3E635;
+        color: #111827;
+        font-weight: 700;
+        padding: 1rem 2rem;
+        border-radius: 0.75rem; /* 12px */
+        font-size: 1.25rem; /* 20px */
+        transition: background-color 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-kiosk:hover {
+        background-color: #82c000;
+    }
+    .btn-kiosk-secondary {
+        background-color: #374151; /* Dark gray */
+        color: #f9fafb;
+    }
+    .btn-kiosk-secondary:hover {
+        background-color: #4B5563;
+    }
+    .form-input-kiosk {
+        border-radius: 0.5rem; /* 8px */
+        border: 2px solid #4B5563; /* Gray-600 */
+        background-color: #374151; /* Gray-700 */
+        color: #f9fafb;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1.125rem; /* 18px */
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .form-input-kiosk::placeholder {
+        color: #9CA3AF; /* Gray-400 */
+    }
+    .form-input-kiosk:focus {
+        border-color: #A3E635;
+        box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.4);
+        outline: none;
+    }
+    .message-box {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1.5rem;
+        font-weight: 500;
+    }
+    .message-success {
+        background-color: #10B981; /* Emerald-500 */
+        color: white;
+    }
+    .message-error {
+        background-color: #EF4444; /* Red-500 */
+        color: white;
+    }
+    .qr-scanner-placeholder {
+        width: 200px;
+        height: 200px;
+        background-color: #374151;
+        border: 2px dashed #4B5563;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem auto;
+        border-radius: 0.5rem;
+        color: #9CA3AF;
+    }
+    .clock {
+        font-size: 2.5rem; /* 40px */
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .date {
+        font-size: 1.125rem; /* 18px */
+        color: #D1D5DB; /* Gray-300 */
+        margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+<div class="kiosk-container">
+  <div class="mb-6">
+    <h1 class="text-4xl font-extrabold">Fitness <span class="accent-text">Center</span></h1>
+    <p class="text-lg text-gray-300 mt-1">Member Check-In</p>
+  </div>
+
+  <div id="clock" class="clock">00:00:00</div>
+  <div id="date" class="date">January 1, 2024</div>
+
+  <div id="checkInOptions">
+    <button id="scanQrBtn" class="btn-kiosk">
+      <i class="fas fa-qrcode mr-3"></i>Scan QR Code
+    </button>
+    <div id="qrScannerPlaceholder" class="qr-scanner-placeholder hidden">
+      <i class="fas fa-camera fa-3x mb-2"></i>
+      <span>QR Scanner Area</span>
+    </div>
+    <p class="my-4 text-gray-400">OR</p>
+    <form id="manualCheckInForm">
+      <input type="text" id="memberIdInput" class="form-input-kiosk" placeholder="Enter Member ID" required>
+      <button type="submit" class="btn-kiosk btn-kiosk-secondary">
+        <i class="fas fa-keyboard mr-3"></i>Check-In Manually
+      </button>
+    </form>
+  </div>
+
+  <div id="messageArea" class="mt-6">
+  </div>
+</div>
+
+<script>
+  // API Base URL
+  const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if needed
+
+  const clockEl = document.getElementById('clock');
+  const dateEl = document.getElementById('date');
+  const scanQrBtn = document.getElementById('scanQrBtn');
+  const qrScannerPlaceholder = document.getElementById('qrScannerPlaceholder'); // Assuming you might use this for a visual cue
+  const manualCheckInForm = document.getElementById('manualCheckInForm');
+  const memberIdInput = document.getElementById('memberIdInput');
+  const messageArea = document.getElementById('messageArea');
+  const checkInOptions = document.getElementById('checkInOptions');
+
+  function updateClock() {
+      const now = new Date();
+      if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      if (dateEl) dateEl.textContent = now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  function showMessage(type, text, duration = 4000) {
+      if (!messageArea) return;
+      messageArea.innerHTML = `<div class="message-box ${type === 'success' ? 'message-success' : 'message-error'}">${text}</div>`;
+
+      if (checkInOptions) checkInOptions.classList.add('hidden');
+      messageArea.classList.remove('hidden');
+
+      setTimeout(() => {
+          messageArea.innerHTML = '';
+          messageArea.classList.add('hidden');
+          if (checkInOptions) checkInOptions.classList.remove('hidden');
+          if (memberIdInput) memberIdInput.value = ''; // Clear input
+      }, duration);
+  }
+
+  async function performCheckIn(memberId, checkInMethod, classId = null) {
+      if (!memberId || !checkInMethod) {
+          showMessage('error', 'Member ID and Check-In Method are required.');
+          return;
+      }
+
+      const payload = {
+          memberId: memberId.toUpperCase(), // Standardize Member ID case
+          checkInMethod: checkInMethod
+      };
+      if (classId) {
+          payload.classId = classId;
+      }
+
+      showMessage('info', 'Processing check-in...', 2000); // Temporary info message
+
+      try {
+          const response = await fetch(`${API_BASE_URL}/attendance/check-in`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+              const attendanceRecord = await response.json();
+              let successMsg = `Welcome, ${attendanceRecord.memberName}! Check-in successful.`;
+              if (attendanceRecord.className) {
+                  successMsg += `<br>Class: ${attendanceRecord.className}`;
+              }
+              showMessage('success', successMsg);
+              // Log to console for admin/debug purposes
+              console.log(`Check-in recorded: ${JSON.stringify(attendanceRecord)}`);
+          } else {
+              const errorText = await response.text();
+              showMessage('error', `Check-in failed: ${errorText || response.statusText}`);
+          }
+      } catch (error) {
+          console.error('Check-in API error:', error);
+          showMessage('error', 'An network error occurred. Please try again.');
+      }
+  }
+
+
+  if (scanQrBtn) {
+      scanQrBtn.addEventListener('click', () => {
+          // This is where you would integrate a QR scanning library.
+          // For now, we'll simulate a scan with a prompt.
+          if (qrScannerPlaceholder) qrScannerPlaceholder.classList.remove('hidden'); // Show visual cue
+          scanQrBtn.textContent = "Scanning...";
+          scanQrBtn.disabled = true;
+
+          // Simulate QR scan after a short delay
+          setTimeout(() => {
+              const scannedData = prompt("Simulate QR Scan: Enter Member ID (e.g., MEM001) or MemberID:ClassID (e.g., MEM004:CLS002)");
+              if (scannedData) {
+                  let memberId, classId;
+                  if (scannedData.includes(':')) {
+                      [memberId, classId] = scannedData.split(':');
+                  } else {
+                      memberId = scannedData;
+                  }
+                  performCheckIn(memberId.trim(), "QR_SCAN", classId ? classId.trim() : null);
+              } else {
+                   showMessage('info', 'QR scan cancelled.', 2000);
+              }
+
+              if (qrScannerPlaceholder) qrScannerPlaceholder.classList.add('hidden');
+              scanQrBtn.textContent = "Scan QR Code";
+              scanQrBtn.disabled = false;
+          }, 500); // Short delay for "scanning" feel
+      });
+  }
+
+  if (manualCheckInForm) {
+      manualCheckInForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const memberId = memberIdInput.value.trim();
+          // For manual check-in, classId is not typically entered here unless UI is adapted
+          performCheckIn(memberId, "MANUAL_ID");
+      });
+  }
+
+  // Placeholder for actual html5-qrcode library integration if you use it
+  /*
+  function onScanSuccess(decodedText, decodedResult) {
+      console.log(`Code matched = ${decodedText}`, decodedResult);
+      let memberId, classId;
+      if (decodedText.includes(':')) { // Example: QR contains "MEMID:CLASSID"
+          [memberId, classId] = decodedText.split(':');
+      } else {
+          memberId = decodedText;
+      }
+      performCheckIn(memberId.trim(), "QR_SCAN", classId ? classId.trim() : null);
+
+      // If using Html5QrcodeScanner, you might want to stop it after a successful scan
+      // html5QrcodeScanner.clear();
+      // qrScannerPlaceholder.classList.add('hidden');
+      // scanQrBtn.textContent = "Scan QR Code";
+      // scanQrBtn.disabled = false;
+  }
+
+  function onScanFailure(error) {
+      // console.warn(`QR Scan Error: ${error}`);
+      // Don't show persistent error messages for scan failures, as it keeps trying
+  }
+
+  // This part needs the html5-qrcode.min.js library included in your HTML
+  // and an element with id="qr-reader"
+  // let html5QrcodeScanner;
+  // document.addEventListener('DOMContentLoaded', () => {
+  //     if (typeof Html5QrcodeScanner !== "undefined") {
+  //         html5QrcodeScanner = new Html5QrcodeScanner(
+  //             "qr-reader-element-id", // ID of the HTML element to render the scanner
+  //             { fps: 10, qrbox: { width: 200, height: 200 }, supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA] },
+  //             false // verbose
+  //         );
+  //     }
+  // });
+  //
+  // scanQrBtn.addEventListener('click', () => {
+  //     if (html5QrcodeScanner) {
+  //         qrScannerPlaceholder.classList.remove('hidden'); // Or the element for the scanner
+  //         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  //         scanQrBtn.textContent = "Scanning...";
+  //         scanQrBtn.disabled = true;
+  //     } else {
+  //         alert("QR Scanner not available. Ensure library is loaded and element exists.");
+  //     }
+  // });
+  */
+
+</script>
+</body>
+</html>
