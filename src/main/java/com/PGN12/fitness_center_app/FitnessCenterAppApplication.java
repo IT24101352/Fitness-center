@@ -13,7 +13,7 @@ public class FitnessCenterAppApplication {
 		SpringApplication.run(FitnessCenterAppApplication.class, args);
 		System.out.println("\nFitness Center Backend Application Started!");
 		System.out.println("Access API endpoints at http://localhost:8080 (or your configured port)");
-		System.out.println("Ensure your data directory 'src/main/resources/data/' is created if it doesn't exist.");
+		System.out.println("Ensure  data directory 'src/main/resources/data/' is created if it doesn't exist.");
 	}
 
 }
