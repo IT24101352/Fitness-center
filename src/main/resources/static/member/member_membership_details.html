@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Membership - Fitness Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .accent-text { color: #A3E635; }
+    .btn-primary { background-color: #A3E635; color: #111827; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; }
+    .btn-primary:hover { background-color: #82c000; }
+    .btn-secondary { background-color: #6B7280; color: #FFFFFF; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; }
+    .btn-secondary:hover { background-color: #4B5563; }
+    .dashboard-nav a { display: block; padding: 0.75rem 1rem; border-radius: 0.375rem; color: #374151; transition: background-color 0.2s ease, color 0.2s ease; }
+    .dashboard-nav a:hover { background-color: #e5e7eb; color: #111827; }
+    .dashboard-nav a.active { background-color: #A3E635; color: #111827; font-weight: 600; }
+    .details-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 2rem; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="text-2xl font-bold text-gray-800">
+        <a href="../index.html">Fitness <span class="accent-text">Center</span></a>
+      </div>
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="../index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+        <a href="../schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+        <a href="member_dashboard.html" class="text-gray-700 hover:text-lime-500 font-semibold">My Dashboard</a>
+      </nav>
+      <div class="flex items-center space-x-3">
+        <span class="hidden sm:inline text-gray-700">Welcome, Member!</span>
+        <button id="logoutButton" class="btn-secondary text-sm sm:text-base !px-3 !py-1.5">Logout</button>
+      </div>
+      <div class="md:hidden">
+        <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden mt-3">
+      <a href="../index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+      <a href="../schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+      <a href="member_dashboard.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded font-semibold">My Dashboard</a>
+      <button id="mobileLogoutButton" class="w-full text-left block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-16">
+  <div class="md:flex md:space-x-8">
+    <aside class="md:w-1/4 mb-8 md:mb-0">
+      <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Member Menu</h3>
+        <nav class="dashboard-nav space-y-1">
+          <a href="member_dashboard.html"><i class="fas fa-tachometer-alt mr-2 w-5 text-center"></i>Overview</a>
+          <a href="member_profile_update.html"><i class="fas fa-user-edit mr-2 w-5 text-center"></i>Update Profile</a>
+          <a href="member_booked_classes.html"><i class="fas fa-calendar-check mr-2 w-5 text-center"></i>My Bookings</a>
+          <a href="member_membership_details.html" class="active"><i class="fas fa-id-card mr-2 w-5 text-center"></i>Membership</a>
+          <a href="member_payment_history.html"><i class="fas fa-history mr-2 w-5 text-center"></i>Payment History</a>
+          <a href="member_upgrade_downgrade.html"><i class="fas fa-level-up-alt mr-2 w-5 text-center"></i>Change Plan</a>
+          <a href="member_feedback_form.html"><i class="fas fa-comment-dots mr-2 w-5 text-center"></i>Submit Feedback</a>
+        </nav>
+      </div>
+    </aside>
+
+    <section class="md:w-3/4">
+      <div class="details-card">
+        <div class="mb-8">
+          <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+            Your Current <span class="accent-text">Membership Plan</span>
+          </h1>
+          <p class="mt-2 text-gray-600">Details about your active subscription.</p>
+        </div>
+
+        <div id="membershipDetailsContainer">
+          <p class="text-center py-4">Loading your membership details...</p>
+        </div>
+
+        <div id="noPlanMessage" class="text-center text-gray-500 mt-8 py-4 hidden">
+          <p>You do not seem to have an active membership plan.</p>
+          <a href="../membership_plans.html" class="text-lime-600 hover:underline font-semibold">Explore Our Plans</a>
+        </div>
+
+        <div class="mt-8 border-t pt-6">
+          <a href="member_upgrade_downgrade.html" class="btn-primary">
+            <i class="fas fa-exchange-alt mr-2"></i>Change or Renew Plan
+          </a>
+          <a href="member_payment_history.html" class="btn-secondary ml-4">
+            <i class="fas fa-file-invoice-dollar mr-2"></i>View Billing History
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+  <div class="container mx-auto px-6 text-center">
+    <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+  const API_BASE_URL = 'http://localhost:8080/api'; // Adjust if needed
+  let currentMemberId = null;
+  let authToken = null;
+
+  const membershipDetailsContainer = document.getElementById('membershipDetailsContainer');
+  const noPlanMessageEl = document.getElementById('noPlanMessage');
+  const headerWelcomeSpan = document.querySelector('header span.text-gray-700');
+
+
+  function checkLoginAndLoadDetails() {
+      authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      currentMemberId = localStorage.getItem('memberId') || sessionStorage.getItem('memberId');
+      const memberFullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName') || 'Member';
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+      if (!authToken || !currentMemberId) {
+          alert('Please log in to view your membership details.');
+          window.location.href = '../login.html'; // Adjust path
+          return;
+      }
+       if (userRole === 'ADMIN') {
+          window.location.href = '../admin/admin_dashboard.html';
+          return;
+      }
+      if (headerWelcomeSpan) {
+           headerWelcomeSpan.textContent = `Welcome, ${memberFullName.split(' ')[0]}!`;
+      }
+      fetchMembershipDetails();
+  }
+
+  async function fetchMembershipDetails() {
+      if (!membershipDetailsContainer || !noPlanMessageEl || !currentMemberId || !authToken) return;
+
+      membershipDetailsContainer.innerHTML = '<p class="text-center py-4">Loading your membership details...</p>';
+      noPlanMessageEl.classList.add('hidden');
+
+      try {
+          // 1. Fetch member details to get their current membershipTierId
+          const memberResponse = await fetch(`${API_BASE_URL}/members/${currentMemberId}`, {
+              headers: { 'X-Auth-Token': authToken }
+          });
+          if (!memberResponse.ok) {
+               if (memberResponse.status === 401 || memberResponse.status === 403) {
+                   alert('Session expired or invalid. Please log in again.');
+                   window.location.href = '../login.html';
+              }
+              throw new Error('Could not fetch your profile information.');
+          }
+          const member = await memberResponse.json();
+
+          if (member.membershipTierId) {
+              // 2. Fetch the details of that specific plan
+              const planResponse = await fetch(`${API_BASE_URL}/plans/${member.membershipTierId}`, {
+                   headers: { 'X-Auth-Token': authToken }
+              });
+              if (!planResponse.ok) throw new Error('Could not fetch your current plan details.');
+              const plan = await planResponse.json();
+
+              if (plan.status && plan.status.toLowerCase() !== 'active') {
+                   membershipDetailsContainer.innerHTML = `<p class="text-yellow-600 bg-yellow-100 p-3 rounded-md">Your current plan "${plan.name}" is inactive. Please contact support or choose a new plan.</p>`;
+                   noPlanMessageEl.classList.remove('hidden'); // Show the link to explore plans
+                   return;
+              }
+
+
+              let featuresHTML = '<p class="text-gray-500 mb-1">No specific features listed.</p>';
+              if (plan.description) {
+                  featuresHTML = plan.description.split(',')
+                      .map(feature => `<li class="flex items-center text-gray-700"><i class="fas fa-check-circle text-lime-500 mr-2"></i>${feature.trim()}</li>`)
+                      .join('');
+              }
+
+              membershipDetailsContainer.innerHTML = `
+                  <div class="mb-4 pb-4 border-b">
+                      <h2 class="text-xl font-semibold text-gray-800">Plan Name:</h2>
+                      <p class="text-2xl text-lime-600 font-bold">${plan.name || 'N/A'}</p>
+                  </div>
+                  <div class="mb-4 pb-4 border-b">
+                      <h2 class="text-xl font-semibold text-gray-800">Price:</h2>
+                      <p class="text-lg text-gray-700">Rs.${plan.price ? plan.price.toFixed(2) : 'N/A'} / ${plan.duration || 'Month'}</p>
+                  </div>
+                  <div class="mb-4">
+                      <h2 class="text-xl font-semibold text-gray-800 mb-2">Features:</h2>
+                      <ul class="space-y-1 list-none pl-0">
+                          ${featuresHTML}
+                      </ul>
+                  </div>
+                  `;
+              noPlanMessageEl.classList.add('hidden');
+
+          } else {
+              membershipDetailsContainer.innerHTML = ''; // Clear loading message
+              noPlanMessageEl.classList.remove('hidden');
+          }
+
+      } catch (error) {
+          console.error("Error fetching membership details:", error);
+          membershipDetailsContainer.innerHTML = `<p class="text-red-500 text-center py-4">Could not load your membership details. ${error.message}</p>`;
+          noPlanMessageEl.classList.add('hidden');
+      }
+  }
+
+  // Mobile menu toggle & Logout
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  }
+  const logoutBtn = document.getElementById('logoutButton');
+  const mobileLogoutBtn = document.getElementById('mobileLogoutButton');
+  function performLogout(e) {
+      e.preventDefault();
+      localStorage.clear(); sessionStorage.clear();
+      window.location.href = '../login.html'; // Adjust path
+  }
+  if(logoutBtn) logoutBtn.addEventListener('click', performLogout);
+  if(mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', performLogout);
+
+  const currentYearElement = document.getElementById('currentYear');
+  if (currentYearElement) {
+      currentYearElement.textContent = new Date().getFullYear();
+  }
+
+  window.addEventListener('DOMContentLoaded', checkLoginAndLoadDetails);
+</script>
+</body>
+</html>
