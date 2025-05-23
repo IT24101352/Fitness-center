@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Light gray background */
+        }
+        .accent-text {
+            color: #A3E635; /* Lime Green */
+        }
+        .btn-primary {
+            background-color: #A3E635;
+            color: #111827; /* Dark text on lime button */
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #82c000; /* Darker lime */
+        }
+        .form-input {
+            border-radius: 0.375rem; /* 6px */
+            border: 1px solid #D1D5DB; /* Gray-300 */
+            padding: 0.75rem 1rem; /* 12px 16px */
+            width: 100%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #A3E635;
+            box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.3); /* Lime focus ring */
+            outline: none;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem; /* 8px */
+            font-weight: 500;
+            color: #374151; /* Gray-700 */
+        }
+        .message-container div, .message-container p { margin-top: 1rem; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                <a href="index.html">Fitness <span class="accent-text">Center</span></a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+                <a href="schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+                <a href="membership_plans.html" class="text-gray-700 hover:text-lime-500">Membership</a>
+                <a href="reviews.html" class="text-gray-700 hover:text-lime-500">Reviews</a>
+                <a href="index.html#contact" class="text-gray-700 hover:text-lime-500">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-3">
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500 font-semibold">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base">Join Now</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-3" aria-hidden="true">
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+            <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+            <a href="membership_plans.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Membership</a>
+            <a href="reviews.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Reviews</a>
+            <a href="index.html#contact" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Contact</a>
+            <a href="register.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Join Now</a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-20 flex items-center justify-center">
+    <div class="max-w-md w-full bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+                Welcome <span class="accent-text">Back!</span>
+            </h1>
+            <p class="mt-3 text-gray-600">Log in to access your account and member benefits.</p>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" name="email" id="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+            </div>
+
+            <div>
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-lime-500 focus:ring-lime-400 border-gray-300 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                </div>
+                <div class="text-sm">
+                    <a href="#" class="font-medium accent-text hover:underline">Forgot your password?</a>
+                </div>
+            </div>
+
+            <div id="loginMessage" class="message-container"></div>
+
+            <div class="pt-4">
+                <button type="submit" class="btn-primary w-full text-lg">Log In</button>
+            </div>
+
+            <div class="text-center text-sm text-gray-600">
+                Don't have an account?
+                <a href="register.html" class="font-medium accent-text hover:underline">Sign up here</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+    <div class="container mx-auto px-6 text-center">
+        <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // API Base URL (ideally, this would be in a shared js/config.js or js/main.js)
+    const API_BASE_URL = 'http://localhost:8080/api'; // Adjust port if your backend runs elsewhere
+
+    const loginForm = document.getElementById('loginForm');
+    const loginMessage = document.getElementById('loginMessage');
+
+    loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default HTML form submission
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('remember-me').checked;
+
+        loginMessage.innerHTML = '<p class="text-blue-500">Attempting to log in...</p>';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/members/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email, password: password })
+            });
+
+            if (response.ok) {
+                const loginData = await response.json(); // Expects { token, memberId, fullName, email, role, message }
+
+                // Store session information
+                // Use localStorage for persistence across browser sessions if "Remember me" is checked,
+                // otherwise sessionStorage for the current session only.
+                const storage = rememberMe ? localStorage : sessionStorage;
+                storage.setItem('authToken', loginData.token);
+                storage.setItem('memberId', loginData.memberId);
+                storage.setItem('fullName', loginData.fullName);
+                storage.setItem('userEmail', loginData.email); // Storing email might be useful
+                storage.setItem('userRole', loginData.role);
+
+                loginMessage.innerHTML = `<p class="text-green-500">${loginData.message || 'Login successful! Redirecting...'}</p>`;
+
+                // Redirect based on role
+                setTimeout(() => {
+                    if (loginData.role === 'ADMIN') {
+                        window.location.href = 'admin/admin_dashboard.html'; // Adjust path if needed
+                    } else {
+                        window.location.href = 'member/member_dashboard.html'; // Adjust path if needed
+                    }
+                }, 1000);
+
+            } else {
+                const errorText = await response.text(); // Get error message from backend
+                loginMessage.innerHTML = `<p class="text-red-500">Login failed: ${errorText || 'Invalid credentials or server error.'}</p>`;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            loginMessage.innerHTML = '<p class="text-red-500">An error occurred. Please try again later.</p>';
+        }
+    });
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', !mobileMenu.classList.contains('hidden'));
+            mobileMenu.setAttribute('aria-hidden', mobileMenu.classList.contains('hidden'));
+        });
+    }
+
+    // Set current year in footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Check if user is already logged in and redirect
+    // (This could be in a shared auth.js file)
+    function checkAlreadyLoggedIn() {
+        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const role = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+        if (token && role) {
+            console.log('User already logged in, redirecting...');
+            if (role === 'ADMIN') {
+                window.location.href = 'admin/admin_dashboard.html';
+            } else {
+                window.location.href = 'member/member_dashboard.html';
+            }
+        }
+    }
+    // Uncomment to enable auto-redirect if logged in when visiting login page
+    // window.addEventListener('DOMContentLoaded', checkAlreadyLoggedIn);
+
+</script>
+</body>
+</html>

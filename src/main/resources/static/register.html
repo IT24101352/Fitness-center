@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Registration - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+        .accent-text { color: #A3E635; }
+        .btn-primary { background-color: #A3E635; color: #111827; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; cursor: pointer; }
+        .btn-primary:hover { background-color: #82c000; }
+        .btn-primary:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .form-input { border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.75rem 1rem; width: 100%; }
+        .form-input:focus { border-color: #A3E635; box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.3); outline: none; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151; }
+        .message-container div, .message-container p { margin-top: 1rem; padding: 0.75rem; border-radius: 0.375rem; }
+        .message-container .text-red-500 { background-color: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; }
+        .message-container .text-green-500 { background-color: #d1fae5; border: 1px solid #a7f3d0; color: #047857; }
+        .message-container .text-blue-500 { background-color: #dbeafe; border: 1px solid #bfdbfe; color: #1d4ed8; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                <a href="index.html">Fitness <span class="accent-text">Center</span></a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+                <a href="schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+                <a href="membership_plans.html" class="text-gray-700 hover:text-lime-500">Membership</a>
+                <a href="reviews.html" class="text-gray-700 hover:text-lime-500">Reviews</a>
+                <a href="index.html#contact" class="text-gray-700 hover:text-lime-500">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-3">
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base">Join Now</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-3" aria-hidden="true">
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+            <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+            <a href="membership_plans.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Membership</a>
+            <a href="reviews.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Reviews</a>
+            <a href="index.html#contact" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Contact</a>
+            <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-20">
+    <div class="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+                Join Our <span class="accent-text">Community</span>
+            </h1>
+            <p class="mt-3 text-gray-600">Create your account and select a plan to get started.</p>
+        </div>
+
+        <form id="registrationForm" class="space-y-6">
+            <div>
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" name="fullName" id="fullName" class="form-input" placeholder="John Doe" required autocomplete="name">
+            </div>
+            <div>
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" name="email" id="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+            </div>
+            <div>
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="new-password" minlength="6">
+            </div>
+            <div>
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+            </div>
+            <div>
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" name="phone" id="phone" class="form-input" placeholder="(123) 456-7890" autocomplete="tel" required>
+            </div>
+            <div>
+                <label for="dob" class="form-label">Date of Birth</label>
+                <input type="date" name="dateOfBirth" id="dob" class="form-input" autocomplete="bday" required>
+            </div>
+            <div>
+                <label for="membershipTier" class="form-label">Choose Membership Tier</label>
+                <select name="membershipTierId" id="membershipTier" class="form-input" required>
+                    <option value="" disabled selected>Loading plans...</option>
+                </select>
+            </div>
+            <div id="formMessage" class="message-container"></div>
+            <div class="pt-4">
+                <button type="submit" id="submitButton" class="btn-primary w-full text-lg">Create Account & Proceed to Payment</button>
+            </div>
+            <div class="text-center text-sm text-gray-600">
+                Already have an account?
+                <a href="login.html" class="font-medium accent-text hover:underline">Log in here</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+    <div class="container mx-auto px-6 text-center">
+        <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8080/api';
+    const registrationForm = document.getElementById('registrationForm');
+    const formMessage = document.getElementById('formMessage');
+    const membershipTierSelect = document.getElementById('membershipTier');
+    const submitButton = document.getElementById('submitButton');
+
+    async function populateMembershipTiers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/plans`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Failed to fetch plans:", response.status, errorText);
+                membershipTierSelect.innerHTML = '<option value="" disabled selected>Could not load plans</option>';
+                return;
+            }
+            const plans = await response.json();
+
+            if (membershipTierSelect.options.length > 0) {
+                membershipTierSelect.options[0].textContent = 'Select a plan';
+                membershipTierSelect.options[0].value = "";
+                membershipTierSelect.options[0].disabled = true;
+                membershipTierSelect.options[0].selected = true;
+                while (membershipTierSelect.options.length > 1) {
+                    membershipTierSelect.remove(1);
+                }
+            } else {
+                 const defaultOption = document.createElement('option');
+                 defaultOption.value = "";
+                 defaultOption.textContent = "Select a plan";
+                 defaultOption.disabled = true;
+                 defaultOption.selected = true;
+                 membershipTierSelect.appendChild(defaultOption);
+            }
+
+            plans.forEach(plan => {
+                if (plan.status && plan.status.toLowerCase() === 'active') {
+                    const option = document.createElement('option');
+                    option.value = plan.id;
+                    option.textContent = `${plan.name} - Rs.${plan.price.toFixed(2)} / ${plan.duration || 'mo'}`;
+                    membershipTierSelect.appendChild(option);
+                }
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const preselectedPlanId = urlParams.get('planId');
+            if (preselectedPlanId) {
+                membershipTierSelect.value = preselectedPlanId;
+            }
+
+        } catch (error) {
+            console.error('Error fetching membership plans:', error);
+            membershipTierSelect.innerHTML = '<option value="" disabled selected>Error loading plans</option>';
+        }
+    }
+
+    registrationForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        formMessage.innerHTML = '';
+        if (submitButton) submitButton.disabled = true;
+
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (membershipTierSelect.value === "") {
+            formMessage.innerHTML = '<p class="text-red-500">Please select a membership tier.</p>';
+            if (submitButton) submitButton.disabled = false;
+            return;
+        }
+        if (password !== confirmPassword) {
+            formMessage.innerHTML = '<p class="text-red-500">Passwords do not match.</p>';
+            if (submitButton) submitButton.disabled = false;
+            return;
+        }
+        if (password.length < 6) {
+             formMessage.innerHTML = '<p class="text-red-500">Password must be at least 6 characters long.</p>';
+             if (submitButton) submitButton.disabled = false;
+            return;
+        }
+
+        const formData = new FormData(registrationForm);
+        const memberData = {
+            fullName: formData.get('fullName'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            phone: formData.get('phone'),
+            dateOfBirth: formData.get('dateOfBirth'),
+            membershipTierId: formData.get('membershipTierId')
+        };
+
+        formMessage.innerHTML = '<p class="text-blue-500">Creating your account and preparing for payment...</p>';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/members/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(memberData)
+            });
+
+            if (response.ok) {
+                const registrationResponseData = await response.json();
+                if (registrationResponseData && registrationResponseData.memberId && registrationResponseData.invoiceId) {
+                    formMessage.innerHTML = `<p class="text-green-500">${registrationResponseData.message || 'Account created! Redirecting to payment...'}</p>`;
+                    registrationForm.reset();
+                    membershipTierSelect.innerHTML = '<option value="" disabled selected>Loading plans...</option>';
+                    populateMembershipTiers();
+
+                    setTimeout(() => {
+                        window.location.href = `member/member_payment_portal.html?invoiceId=${registrationResponseData.invoiceId}&memberId=${registrationResponseData.memberId}`;
+                    }, 2500);
+                } else {
+                    formMessage.innerHTML = `<p class="text-red-500">Registration partially successful, but could not proceed to payment. Please contact support.</p>`;
+                    console.error("Registration response missing memberId or invoiceId:", registrationResponseData);
+                    if (submitButton) submitButton.disabled = false;
+                }
+            } else {
+                const errorText = await response.text();
+                formMessage.innerHTML = `<p class="text-red-500">Registration failed: ${errorText || response.statusText}</p>`;
+                if (submitButton) submitButton.disabled = false;
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            formMessage.innerHTML = '<p class="text-red-500">An error occurred. Please try again later.</p>';
+            if (submitButton) submitButton.disabled = false;
+        }
+    });
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            const isExpanded = mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.setAttribute('aria-hidden', isExpanded);
+        });
+    }
+
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    window.addEventListener('DOMContentLoaded', populateMembershipTiers);
+</script>
+</body>
+</html>

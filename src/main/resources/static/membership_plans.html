@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership Plans - Fitness Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        .accent-text { color: #A3E635; }
+        .btn-primary {
+            background-color: #A3E635; color: #111827; font-weight: 600;
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover { background-color: #82c000; }
+        .btn-secondary {
+            background-color: #1F2937; color: #FFFFFF; font-weight: 600;
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover { background-color: #374151; }
+        .plan-card {
+            background-color: white; border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .plan-card.popular { border-color: #A3E635; transform: scale(1.05); }
+        .section-title { font-size: 2.5rem; font-weight: 800; color: #1F2937; margin-bottom: 1rem; }
+        .section-subtitle { font-size: 1.125rem; color: #4B5563; margin-bottom: 2rem; }
+        /* Dropdown Styles */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; background-color: #f9f9f9;
+            min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 50; right: 0; border-radius: 0.375rem; border: 1px solid #e5e7eb;
+        }
+        .dropdown-content a {
+            color: #1f2937; padding: 0.75rem 1rem; text-decoration: none;
+            display: block; font-size: 0.875rem;
+        }
+        .dropdown-content a:hover {background-color: #e5e7eb;}
+        .dropdown:hover .dropdown-content {display: block;}
+        .profile-btn {
+            background-color: #A3E635; color: #111827; padding: 0.5rem 1rem;
+            border-radius: 0.375rem; font-weight: 500; display: flex;
+            align-items: center; cursor: pointer; border: none;
+        }
+        .profile-btn i { margin-left: 0.5rem; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                <a href="index.html">Fitness <span class="accent-text">Center</span></a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+                <a href="index.html#about" class="text-gray-700 hover:text-lime-500">About</a>
+                <a href="schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+                <a href="membership_plans.html" class="text-gray-700 hover:text-lime-500 font-semibold">Membership</a>
+                <a href="reviews.html" class="text-gray-700 hover:text-lime-500">Reviews</a>
+                <a href="index.html#contact" class="text-gray-700 hover:text-lime-500">Contact</a>
+            </nav>
+            <div id="userAuthSection" class="flex items-center space-x-3">
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base">Join Now</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-3">
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+            <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+            <a href="membership_plans.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded font-semibold">Membership</a>
+            <a href="reviews.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Reviews</a>
+            <a href="index.html#contact" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Contact</a>
+            <div id="mobileAuthLinks">
+                <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-20">
+    <div class="text-center mb-12 md:mb-16">
+        <h1 class="section-title">Our <span class="accent-text">Membership</span> Tiers</h1>
+        <p class="section-subtitle max-w-2xl mx-auto">
+            Find the perfect plan to kickstart your fitness journey. All plans include access to our state-of-the-art facilities and a supportive community.
+        </p>
+    </div>
+
+    <div id="plansGridContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+        <p id="loadingPlansMessage" class="col-span-full text-center text-gray-500">Loading membership plans...</p>
+    </div>
+
+    <div id="comparisonTableSection" class="mt-16 md:mt-24 hidden">
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-8">Feature Comparison</h2>
+        <div class="overflow-x-auto bg-white rounded-lg shadow-lg">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-800 text-white">
+                <tr id="comparisonTableHeaderRow">
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200" id="comparisonTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p id="noPlansMessage" class="text-center text-gray-500 mt-8 hidden">No active membership plans available at the moment. Please check back later or contact us.</p>
+
+
+    <div class="mt-16 md:mt-24 text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Ready to Get Started?</h2>
+        <p class="text-gray-600 mb-8 max-w-lg mx-auto">Join the Fitness Center family today and take the first step towards a healthier, stronger you. If you have questions, feel free to contact us!</p>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <a href="register.html" class="btn-primary text-lg px-8 py-3">Sign Up Now</a>
+        </div>
+    </div>
+
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+    <div class="container mx-auto px-6 text-center">
+        <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Header Auth Elements
+    const userAuthSection = document.getElementById('userAuthSection');
+    const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+
+    // Page Specific Elements
+    const plansGridContainer = document.getElementById('plansGridContainer');
+    const loadingPlansMessage = document.getElementById('loadingPlansMessage');
+    const noPlansMessage = document.getElementById('noPlansMessage');
+    const comparisonTableSection = document.getElementById('comparisonTableSection');
+    const comparisonTableHeaderRow = document.getElementById('comparisonTableHeaderRow');
+    const comparisonTableBody = document.getElementById('comparisonTableBody');
+
+    // --- Header Authentication Logic ---
+    function updateHeaderNav() {
+        const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const fullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+        let desktopNavHTML = '';
+        let mobileNavHTML = '';
+
+        if (authToken && fullName) {
+            const firstName = fullName.split(' ')[0];
+            const dashboardLink = userRole === 'ADMIN' ? 'admin/admin_dashboard.html' : 'member/member_dashboard.html';
+            desktopNavHTML = `
+                <div class="dropdown">
+                    <button class="profile-btn text-sm sm:text-base">
+                        Welcome, ${firstName} <i class="fas fa-caret-down ml-1"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="${dashboardLink}">My Dashboard</a>
+                        <a href="#" id="logoutButtonDesktop">Logout</a>
+                    </div>
+                </div>
+            `;
+             mobileNavHTML = `
+                <a href="${dashboardLink}" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">My Dashboard</a>
+                <a href="#" id="logoutButtonMobile" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</a>
+            `;
+        } else {
+            desktopNavHTML = `
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base">Join Now</a>
+            `;
+            mobileNavHTML = `
+                <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+                 <a href="register.html" class="block py-2 px-4 text-sm text-lime-600 bg-lime-100 hover:bg-lime-200 rounded font-semibold">Join Now</a>
+            `;
+        }
+        if (userAuthSection) userAuthSection.innerHTML = desktopNavHTML;
+        if (mobileAuthLinks) mobileAuthLinks.innerHTML = mobileNavHTML;
+
+
+        const logoutDesktop = document.getElementById('logoutButtonDesktop');
+        if (logoutDesktop) logoutDesktop.addEventListener('click', performLogout);
+        const logoutMobile = document.getElementById('logoutButtonMobile');
+        if (logoutMobile) logoutMobile.addEventListener('click', performLogout);
+    }
+
+    function performLogout(e) {
+        e.preventDefault();
+        localStorage.clear(); sessionStorage.clear();
+        updateHeaderNav();
+        // Redirect or simply update UI, depending on the page.
+        // On membership_plans.html, just updating UI might be enough.
+    }
+
+    // --- Membership Plans Page Specific Logic ---
+    async function fetchAndRenderPlans() {
+        if (loadingPlansMessage) loadingPlansMessage.classList.remove('hidden');
+        if (noPlansMessage) noPlansMessage.classList.add('hidden');
+        if (plansGridContainer) plansGridContainer.innerHTML = ''; // Clear before loading
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/plans`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const plans = await response.json();
+            const activePlans = plans.filter(plan => plan.status && plan.status.toLowerCase() === 'active');
+
+            if (loadingPlansMessage) loadingPlansMessage.classList.add('hidden');
+
+            if (activePlans.length === 0) {
+                if (noPlansMessage) noPlansMessage.classList.remove('hidden');
+                if (comparisonTableSection) comparisonTableSection.classList.add('hidden');
+                return;
+            }
+
+            renderPlanCards(activePlans);
+            if (comparisonTableSection && comparisonTableHeaderRow && comparisonTableBody) {
+                renderComparisonTable(activePlans);
+                comparisonTableSection.classList.remove('hidden');
+            }
+
+        } catch (error) {
+            console.error('Failed to fetch membership plans:', error);
+            if (loadingPlansMessage) loadingPlansMessage.classList.add('hidden');
+            if (noPlansMessage) {
+                noPlansMessage.textContent = 'Failed to load membership plans. Please try again later.';
+                noPlansMessage.classList.remove('hidden');
+            }
+            if (comparisonTableSection) comparisonTableSection.classList.add('hidden');
+        }
+    }
+
+    function renderPlanCards(activePlans) {
+        if (!plansGridContainer) return;
+        plansGridContainer.innerHTML = ''; // Clear previous content
+
+        const popularPlanNames = ["Premium Plus"]; // Example
+
+        activePlans.forEach((plan, index) => {
+            const isPopular = popularPlanNames.includes(plan.name);
+            let cardClasses = "plan-card flex flex-col justify-between";
+            let buttonClasses = "btn-secondary w-full mt-auto";
+            let priceColor = "accent-text";
+            let popularBadgeHTML = "";
+
+            if (isPopular) {
+                cardClasses += " popular";
+                buttonClasses = "btn-primary w-full mt-auto";
+                priceColor = "text-gray-900"; // Main price color for popular plan
+                popularBadgeHTML = `<span class="absolute top-0 right-0 bg-gray-900 text-white text-xs font-semibold px-4 py-1.5 rounded-bl-lg rounded-tr-md -mr-px -mt-px">MOST POPULAR</span>`;
+            }
+
+            const featuresArray = plan.description ? plan.description.split(',').map(f => f.trim()) : [];
+            let featuresHTML = featuresArray.map(feature => {
+                let iconClass = "fas fa-check-circle text-lime-500";
+                if (feature.toLowerCase().includes("not included") || feature.toLowerCase().includes("extra")) {
+                    iconClass = "fas fa-times-circle text-red-400";
+                }
+                return `<li><i class="${iconClass} mr-2"></i>${feature}</li>`;
+            }).join('');
+            if (featuresArray.length === 0) {
+                featuresHTML = '<li><i class="fas fa-info-circle text-gray-400 mr-2"></i>Details available upon request.</li>';
+            }
+
+            const planCardHTML = `
+                <div class="${cardClasses} relative">
+                    ${popularBadgeHTML}
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">${plan.name}</h3>
+                        <p class="text-4xl font-extrabold ${priceColor} mb-1">Rs.${plan.price.toFixed(2)}<span class="text-xl text-gray-500 font-medium">/${plan.duration || 'mo'}</span></p>
+                        <p class="text-gray-500 mb-6 min-h-[3em]">${plan.shortDescription || `Ideal for those looking for ${plan.name.toLowerCase()} benefits.`}</p>
+                        <ul class="text-gray-600 space-y-3 mb-8 min-h-[120px]"> ${featuresHTML}
+                        </ul>
+                    </div>
+                    <a href="register.html?planId=${plan.id}" class="${buttonClasses}">Choose ${plan.name.split(' ')[0]}</a>
+                </div>
+            `;
+            plansGridContainer.innerHTML += planCardHTML;
+        });
+    }
+
+    function renderComparisonTable(activePlans) {
+        if (!comparisonTableHeaderRow || !comparisonTableBody) return;
+        comparisonTableHeaderRow.innerHTML = '<th class="py-3 px-4 text-left">Feature</th>';
+        activePlans.forEach(plan => {
+            comparisonTableHeaderRow.innerHTML += `<th class="py-3 px-4 text-center ${plan.name === "Premium Plus" ? 'accent-text' : ''}">${plan.name}</th>`;
+        });
+
+        comparisonTableBody.innerHTML = ''; // Clear existing rows
+
+        // Price Row
+        let priceRowHTML = `<tr><td class="py-3 px-4 font-medium">Price (${activePlans[0]?.duration || 'Monthly'})</td>`;
+        activePlans.forEach(plan => {
+            priceRowHTML += `<td class="py-3 px-4 text-center ${plan.name === "Premium Plus" ? 'font-semibold' : ''}">Rs.${plan.price.toFixed(2)}</td>`;
+        });
+        priceRowHTML += `</tr>`;
+        comparisonTableBody.innerHTML += priceRowHTML;
+
+        // Define a standard set of features to compare
+        const commonFeaturesToCompare = [
+            { name: "Gym Equipment Access", keyWords: ["equipment access", "gym access"] },
+            { name: "Group Fitness Classes", keyWords: ["group classes", "unlimited classes"] },
+            { name: "Premium Locker Rooms", keyWords: ["premium locker", "amenities"] },
+            { name: "Personal Training Consultation", keyWords: ["personal training consultation", "pt consultation"] },
+            { name: "Guest Passes / Month", keyWords: ["guest passes"], extractValue: true },
+            { name: "Childcare Services", keyWords: ["childcare"] }
+        ];
+
+        commonFeaturesToCompare.forEach(feature => {
+            let featureRowHTML = `<tr><td class="py-3 px-4">${feature.name}</td>`;
+            activePlans.forEach(plan => {
+                const planDescriptionLower = plan.description ? plan.description.toLowerCase() : "";
+                let featureStatusIcon = '<i class="fas fa-times text-red-400"></i>'; // Default to not included
+
+                if (feature.keyWords.some(keyword => planDescriptionLower.includes(keyword))) {
+                    if (feature.extractValue && feature.name === "Guest Passes / Month") {
+                        const match = planDescriptionLower.match(/(\d+)\s*guest pass/);
+                        featureStatusIcon = match ? match[1] : '<i class="fas fa-check text-lime-500"></i>';
+                    } else if (feature.name === "Personal Training Consultation" && planDescriptionLower.includes("free")) {
+                        featureStatusIcon = '1 Free';
+                    }
+                    else {
+                        featureStatusIcon = '<i class="fas fa-check text-lime-500"></i>';
+                    }
+                }
+                featureRowHTML += `<td class="py-3 px-4 text-center">${featureStatusIcon}</td>`;
+            });
+            featureRowHTML += `</tr>`;
+            comparisonTableBody.innerHTML += featureRowHTML;
+        });
+    }
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+        });
+    }
+
+    // Set current year in footer
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+        updateHeaderNav();
+        fetchAndRenderPlans();
+    });
+</script>
+</body>
+</html>

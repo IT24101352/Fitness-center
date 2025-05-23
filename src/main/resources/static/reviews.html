@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews & Ratings - Fitness Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .accent-text { color: #A3E635; }
+    .btn-primary { background-color: #A3E635; color: #111827; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background-color 0.3s ease; }
+    .btn-primary:hover { background-color: #82c000; }
+    .review-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 1.5rem; }
+    .star-rating .fa-star { color: #F59E0B; }
+    .star-rating .fa-star-half-alt { color: #F59E0B; }
+    .star-rating .far.fa-star { color: #D1D5DB; }
+    .filter-btn { background-color: #e5e7eb; color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; transition: background-color 0.2s, color 0.2s; }
+    .filter-btn:hover { background-color: #D1D5DB; }
+    .filter-btn.active { background-color: #A3E635; color: #111827; }
+    /* Dropdown Styles */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content {
+        display: none; position: absolute; background-color: #f9f9f9;
+        min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 50; right: 0; border-radius: 0.375rem; border: 1px solid #e5e7eb;
+    }
+    .dropdown-content a {
+        color: #1f2937; padding: 0.75rem 1rem; text-decoration: none;
+        display: block; font-size: 0.875rem;
+    }
+    .dropdown-content a:hover {background-color: #e5e7eb;}
+    .dropdown:hover .dropdown-content {display: block;}
+    .profile-btn {
+        background-color: #A3E635; color: #111827; padding: 0.5rem 1rem;
+        border-radius: 0.375rem; font-weight: 500; display: flex;
+        align-items: center; cursor: pointer; border: none;
+    }
+    .profile-btn i { margin-left: 0.5rem; }
+    .form-input { /* For search bar */
+        border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.75rem 1rem; width: 100%;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-input:focus { border-color: #A3E635; box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.3); outline: none; }
+
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="text-2xl font-bold text-gray-800"><a href="index.html">Fitness <span class="accent-text">Center</span></a></div>
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+        <a href="index.html#about" class="text-gray-700 hover:text-lime-500">About</a>
+        <a href="schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+        <a href="membership_plans.html" class="text-gray-700 hover:text-lime-500">Membership</a>
+        <a href="reviews.html" class="text-gray-700 hover:text-lime-500 font-semibold">Reviews</a>
+        <a href="index.html#contact" class="text-gray-700 hover:text-lime-500">Contact</a>
+      </nav>
+      <div id="userAuthSection" class="flex items-center space-x-3">
+        <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+        <a href="register.html" class="btn-primary text-sm sm:text-base !px-4 !py-2">Join Now</a>
+      </div>
+      <div class="md:hidden"><button id="mobile-menu-button" class="text-gray-800 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button></div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden mt-3">
+      <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+      <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+      <a href="membership_plans.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Membership</a>
+      <a href="reviews.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded font-semibold">Reviews</a>
+      <a href="index.html#contact" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Contact</a>
+      <div id="mobileAuthLinks">
+        <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow container mx-auto px-6 py-12 md:py-16">
+  <div class="text-center mb-12">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+      Member <span class="accent-text">Reviews & Ratings</span>
+    </h1>
+    <p class="mt-3 text-gray-600 text-lg">See what our community is saying about our classes and trainers.</p>
+  </div>
+
+  <div class="mb-8 flex flex-wrap justify-center gap-3">
+    <button class="filter-btn active" data-filter="all">All Reviews</button>
+    <button class="filter-btn" data-filter="class">Class Reviews</button>
+    <button class="filter-btn" data-filter="trainer">Trainer Reviews</button>
+    <button class="filter-btn" data-filter="facility">Facility Reviews</button>
+  </div>
+
+  <div class="mb-8">
+    <input type="text" id="reviewSearch" placeholder="Search reviews by keyword, class, or trainer..." class="form-input w-full max-w-xl mx-auto py-3 px-4 text-base">
+  </div>
+
+
+  <div id="reviewsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+  </div>
+  <p id="noReviewsMessage" class="text-center text-gray-500 mt-8 py-4 hidden">No reviews match your criteria.</p>
+
+  <div class="mt-12 text-center">
+    <a href="member/member_feedback_form.html" id="leaveReviewLink" class="btn-primary text-lg">
+      <i class="fas fa-plus-circle mr-2"></i>Leave Your Own Review
+    </a>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-300 py-12 mt-auto">
+  <div class="container mx-auto px-6 text-center">
+    <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // API Base URL
+  const API_BASE_URL = 'http://localhost:8080/api';
+
+  // Header Auth Elements
+  const userAuthSection = document.getElementById('userAuthSection');
+  const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+
+  // Page Specific Elements
+  const reviewsContainer = document.getElementById('reviewsContainer');
+  const noReviewsMessage = document.getElementById('noReviewsMessage');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const reviewSearchInput = document.getElementById('reviewSearch');
+  const leaveReviewLink = document.getElementById('leaveReviewLink');
+
+  let allFetchedReviews = [];
+  let currentFilterType = 'all';
+  let currentSearchTerm = '';
+
+  // --- Header Authentication Logic ---
+  function updateHeaderNav() {
+      const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      const fullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName');
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+      let desktopNavHTML = '';
+      let mobileNavHTML = '';
+
+      if (authToken && fullName) {
+          const firstName = fullName.split(' ')[0];
+          const dashboardLink = userRole === 'ADMIN' ? 'admin/admin_dashboard.html' : 'member/member_dashboard.html';
+          desktopNavHTML = `
+              <div class="dropdown">
+                  <button class="profile-btn text-sm sm:text-base">
+                      Welcome, ${firstName} <i class="fas fa-caret-down ml-1"></i>
+                  </button>
+                  <div class="dropdown-content">
+                      <a href="${dashboardLink}">My Dashboard</a>
+                      <a href="#" id="logoutButtonDesktop">Logout</a>
+                  </div>
+              </div>
+          `;
+           mobileNavHTML = `
+              <a href="${dashboardLink}" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">My Dashboard</a>
+              <a href="#" id="logoutButtonMobile" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</a>
+          `;
+          if(leaveReviewLink) leaveReviewLink.href = "member/member_feedback_form.html"; // Correct path if logged in
+      } else {
+          desktopNavHTML = `
+              <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+              <a href="register.html" class="btn-primary text-sm sm:text-base !px-4 !py-2">Join Now</a>
+          `;
+          mobileNavHTML = `
+              <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+              <a href="register.html" class="block py-2 px-4 text-sm text-lime-600 bg-lime-100 hover:bg-lime-200 rounded font-semibold">Join Now</a>
+          `;
+           if(leaveReviewLink) leaveReviewLink.href = "login.html"; // Redirect to login if not logged in
+      }
+      if (userAuthSection) userAuthSection.innerHTML = desktopNavHTML;
+      if (mobileAuthLinks) mobileAuthLinks.innerHTML = mobileNavHTML;
+
+      const logoutDesktop = document.getElementById('logoutButtonDesktop');
+      if (logoutDesktop) logoutDesktop.addEventListener('click', performLogout);
+      const logoutMobile = document.getElementById('logoutButtonMobile');
+      if (logoutMobile) logoutMobile.addEventListener('click', performLogout);
+  }
+
+  function performLogout(e) {
+      e.preventDefault();
+      localStorage.clear(); sessionStorage.clear();
+      updateHeaderNav();
+      // Optionally, refresh reviews or redirect if needed
+  }
+
+  // --- Reviews Page Specific Logic ---
+  async function fetchReviewsAndRender() {
+      try {
+          const response = await fetch(`${API_BASE_URL}/feedback/approved`);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          allFetchedReviews = await response.json();
+          filterAndSearchReviews();
+      } catch (error) {
+          console.error('Failed to fetch reviews:', error);
+          if (noReviewsMessage) {
+              noReviewsMessage.textContent = 'Failed to load reviews. Please try again later.';
+              noReviewsMessage.classList.remove('hidden');
+          }
+          if (reviewsContainer) reviewsContainer.innerHTML = '';
+      }
+  }
+
+  function generateStarRating(rating) {
+      let starsHTML = '';
+      const fullStars = Math.floor(rating);
+      const halfStar = rating % 1 >= 0.5 && rating % 1 !== 0; // Check for .5 or more, but not whole
+      const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+      for (let i = 0; i < fullStars; i++) starsHTML += '<i class="fas fa-star"></i>';
+      if (halfStar) starsHTML += '<i class="fas fa-star-half-alt"></i>';
+      for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="far fa-star"></i>';
+      return starsHTML || '<span class="text-xs text-gray-500">Not Rated</span>';
+  }
+
+  function renderReviews(reviewsToDisplay) {
+      if(!reviewsContainer || !noReviewsMessage) return;
+      reviewsContainer.innerHTML = '';
+      noReviewsMessage.classList.add('hidden');
+
+      if (reviewsToDisplay.length === 0) {
+          noReviewsMessage.classList.remove('hidden');
+          return;
+      }
+
+      reviewsToDisplay.forEach(review => {
+          let displayDate = review.submissionDate;
+          try {
+              displayDate = new Date(review.submissionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          } catch(e) { /* use original if parsing fails */ }
+
+          const card = `
+              <div class="review-card flex flex-col h-full"> <div class="mb-3">
+                      <h3 class="text-xl font-bold text-gray-800">${review.targetName || review.feedbackType}
+                          <span class="text-sm font-normal text-gray-500">(${review.feedbackType})</span>
+                      </h3>
+                      ${review.rating ? `<div class="star-rating text-lg my-1">${generateStarRating(review.rating)} (${review.rating}/5)</div>` : '<div class="star-rating text-lg my-1 text-gray-400 text-sm">Not rated</div>'}
+                  </div>
+                  <p class="text-gray-700 leading-relaxed mb-3 flex-grow">"${review.comments}"</p>
+                  <div class="text-sm text-gray-500 mt-auto pt-3 border-t border-gray-200">
+                      <p>By: ${review.anonymous ? 'Anonymous' : review.reviewerName || 'Member'}
+                          ${review.verifiedReviewer && !review.anonymous ? '<i class="fas fa-check-circle text-green-500 ml-1" title="Verified Reviewer"></i>' : ''}
+                      </p>
+                      <p>Date: ${displayDate}</p>
+                  </div>
+              </div>
+          `;
+          reviewsContainer.innerHTML += card;
+      });
+  }
+
+  function filterAndSearchReviews() {
+      if (noReviewsMessage) noReviewsMessage.textContent = 'No reviews match your criteria.';
+      let filtered = allFetchedReviews;
+
+      if (currentFilterType !== 'all') {
+          filtered = filtered.filter(review => review.feedbackType.toLowerCase() === currentFilterType.toLowerCase());
+      }
+      if (currentSearchTerm) {
+          const searchTermLower = currentSearchTerm.toLowerCase();
+          filtered = filtered.filter(review =>
+              (review.targetName && review.targetName.toLowerCase().includes(searchTermLower)) ||
+              (review.comments && review.comments.toLowerCase().includes(searchTermLower)) ||
+              (!review.anonymous && review.reviewerName && review.reviewerName.toLowerCase().includes(searchTermLower))
+          );
+      }
+      renderReviews(filtered);
+  }
+
+  filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          currentFilterType = this.dataset.filter;
+          filterAndSearchReviews();
+      });
+  });
+
+  if(reviewSearchInput) {
+      reviewSearchInput.addEventListener('input', function() {
+          currentSearchTerm = this.value;
+          filterAndSearchReviews();
+      });
+  }
+
+  if (leaveReviewLink) {
+      leaveReviewLink.addEventListener('click', function(event) {
+          const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+          if (!token) {
+              event.preventDefault();
+              alert('You need to be logged in to leave a review. Redirecting to login...');
+              window.location.href = 'login.html'; // Assumes login.html is in the same directory
+          }
+          // If logged in, the default href (member/member_feedback_form.html) will proceed
+      });
+  }
+
+  // Mobile menu toggle
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', () => {
+          const isHidden = mobileMenu.classList.toggle('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+      });
+  }
+
+  // Set current year in footer
+  const currentYearElement = document.getElementById('currentYear');
+  if (currentYearElement) {
+      currentYearElement.textContent = new Date().getFullYear();
+  }
+
+  // Initial Load
+  window.addEventListener('DOMContentLoaded', () => {
+      updateHeaderNav();
+      fetchReviewsAndRender();
+  });
+</script>
+</body>
+</html>

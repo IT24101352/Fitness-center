@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Center - Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Light gray background */
+        }
+        .hero-bg-image {
+            background-image: url('https://i.pinimg.com/736x/7d/b2/2e/7db22ee51dfc0e18ec59bd963d379eca.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .accent-color {
+            background-color: #A3E635; /* Lime Green */
+        }
+        .accent-text {
+            color: #A3E635;
+        }
+        .dark-bg {
+            background-color: #111827; /* Dark Gray/Black */
+        }
+        .btn-primary {
+            background-color: #A3E635;
+            color: #111827; /* Dark text on lime button */
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #82c000; /* Darker lime */
+        }
+        .btn-secondary {
+            background-color: #1F2937; /* Dark Gray */
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #374151; /* Lighter Dark Gray */
+        }
+        .btn-outline {
+            border: 2px solid #A3E635;
+            color: #A3E635;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .btn-outline:hover {
+            background-color: #A3E635;
+            color: #111827;
+        }
+        .section-title {
+            font-size: 2.5rem; /* 40px */
+            font-weight: 800;
+            color: #1F2937; /* Dark Gray */
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.125rem; /* 18px */
+            color: #4B5563; /* Medium Gray */
+            margin-bottom: 2rem;
+        }
+        .card {
+            border-radius: 0.75rem; /* 12px */
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        nav a {
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #A3E635;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0; /* Align to the right */
+            border-radius: 0.375rem; /* 6px */
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.875rem; /* text-sm */
+        }
+        .dropdown-content a:hover {background-color: #f1f1f1}
+        .dropdown:hover .dropdown-content {display: block;}
+        .profile-btn {
+            background-color: #A3E635; /* Accent color */
+            color: #111827;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* 6px */
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .profile-btn i {
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                <a href="index.html">Fitness <span class="accent-text">Center</span></a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-gray-700 hover:text-lime-500">Home</a>
+                <a href="#about" class="text-gray-700 hover:text-lime-500">About</a>
+                <a href="schedule.html" class="text-gray-700 hover:text-lime-500">Classes</a>
+                <a href="#pricing" class="text-gray-700 hover:text-lime-500">Membership</a>
+                <a href="reviews.html" class="text-gray-700 hover:text-lime-500">Reviews</a>
+            </nav>
+            <div id="userAuthSection" class="flex items-center space-x-3">
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base">Join Now</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-3">
+            <a href="index.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Home</a>
+            <a href="#about" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">About</a>
+            <a href="schedule.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Classes</a>
+            <a href="#pricing" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Membership</a>
+            <a href="reviews.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Reviews</a>
+            <a href="#contact" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Contact</a>
+            <div id="mobileAuthLinks">
+                <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+                <a href="register.html" class="block py-2 px-4 text-sm text-lime-600 bg-lime-100 hover:bg-lime-200 rounded font-semibold">Join Now</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<section class="min-h-screen flex items-center bg-white">
+    <div class="container mx-auto px-6 py-12 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+        <div class="hero-bg-image h-96 md:h-[calc(100vh-200px)] rounded-lg shadow-2xl order-last md:order-first">
+        </div>
+        <div class="text-center md:text-left">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
+                Your <span class="accent-text">Best Self</span> Starts Here.
+            </h1>
+            <p class="mt-6 text-lg md:text-xl text-gray-600 max-w-xl mx-auto md:mx-0">
+                Welcome to Fitness Center, where we empower you to achieve your health and wellness goals.
+                Join our community and transform your life, one workout at a time.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="schedule.html" class="btn-primary text-lg">Book Your Class <i class="fas fa-arrow-right ml-2"></i></a>
+                <a href="#pricing" class="btn-secondary text-lg">View Memberships</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services" class="py-16 md:py-24 bg-gray-50">
+    <div class="container mx-auto px-6">
+        <div class="text-center">
+            <h2 class="section-title">Find Your <span class="accent-text">Perfect Fit</span></h2>
+            <p class="section-subtitle max-w-2xl mx-auto">
+                Whatever your fitness goals, we have the programs and expertise to guide you.
+                Explore our core focus areas.
+            </p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8 mt-12">
+            <div class="card bg-lime-400 text-gray-900 p-8 transform hover:scale-105 transition-transform duration-300">
+                <div class="text-4xl mb-4"><i class="fas fa-dumbbell"></i></div>
+                <h3 class="text-2xl font-bold mb-3">Gain Strength</h3>
+                <p class="text-gray-800 leading-relaxed">
+                    Our focused approach and expert trainers will guide you towards significant muscle gain and enhanced endurance.
+                </p>
+                <a href="#" class="inline-block mt-6 font-semibold text-gray-900 hover:text-black">
+                    Learn More <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            <div class="card dark-bg text-white p-8 transform hover:scale-105 transition-transform duration-300">
+                <div class="text-4xl mb-4 text-lime-400"><i class="fas fa-fire"></i></div>
+                <h3 class="text-2xl font-bold mb-3">Effective Fat Loss</h3>
+                <p class="text-gray-300 leading-relaxed">
+                    Our approach to fitness goes beyond simply shedding pounds; it's about building a mindset of empowerment and sustainable health.
+                </p>
+                <a href="#" class="inline-block mt-6 font-semibold text-lime-400 hover:text-lime-300">
+                    Learn More <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            <div class="card bg-white text-gray-800 p-8 transform hover:scale-105 transition-transform duration-300">
+                <div class="text-4xl mb-4 text-lime-400"><i class="fas fa-apple-alt"></i></div>
+                <h3 class="text-2xl font-bold mb-3">Expert Nutrition</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    We'll empower you with knowledge for balanced meals, healthy snacks, and smart eating strategies for long-term wellness.
+                </p>
+                <a href="#" class="inline-block mt-6 font-semibold text-lime-500 hover:text-lime-600">
+                    Learn More <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="py-16 md:py-24 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <img src="https://i.pinimg.com/736x/67/1a/64/671a64589cc0391c2cd223eb95dbe45c.jpg" alt="Fitness Coach" class="rounded-lg shadow-xl w-full">
+            </div>
+            <div>
+                <h2 class="section-title">Meet Our <span class="accent-text">Expert Team</span></h2>
+                <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                    Hello there! We are your dedicated fitness guides and wellness enthusiasts. Our journey into the world of fitness began with a simple passion for movement and a desire to help others achieve their health goals. We believe in a holistic approach, combining effective training with mindful practices.
+                </p>
+                <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                    At Fitness Center, we're committed to providing personalized support and creating a motivating environment for everyone.
+                </p>
+                <a href="#contact" class="btn-outline text-lg">Get A Free Consultation</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="pricing" class="py-16 md:py-24 bg-gray-50">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="section-title">Flexible <span class="accent-text">Membership</span> Plans</h2>
+        <p class="section-subtitle max-w-2xl mx-auto">
+            Choose a plan that fits your lifestyle and goals. Get access to top-notch facilities, expert trainers, and a supportive community.
+        </p>
+        <div id="pricingPlansContainer" class="grid md:grid-cols-3 gap-8 mt-12">
+            <p id="loadingIndexPlansMessage" class="col-span-full text-center text-gray-500">Loading membership plans...</p>
+        </div>
+        <a href="membership_plans.html" class="inline-block mt-12 text-lg font-semibold text-lime-600 hover:text-lime-700">
+            See All Membership Options <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+</section>
+
+
+
+<footer class="bg-gray-800 text-gray-300 py-12">
+    <div class="container mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-4">Fitness <span class="accent-text">Center</span></h3>
+                <p class="mb-4">Empowering you to achieve your health and wellness goals.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-lime-400"><i class="fab fa-facebook-f fa-lg"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-lime-400"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-lime-400"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-lime-400"><i class="fab fa-youtube fa-lg"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="#about" class="hover:text-lime-400">About Us</a></li>
+                    <li><a href="schedule.html" class="hover:text-lime-400">Class Schedule</a></li>
+                    <li><a href="#pricing" class="hover:text-lime-400">Membership Plans</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Contact Info</h4>
+                <p class="mb-2"><i class="fas fa-map-marker-alt mr-2 text-lime-400"></i> No. 123, Galle Road, Colombo 03, Sri Lanka</p>
+                <p class="mb-2"><i class="fas fa-phone-alt mr-2 text-lime-400"></i> (011) 234 5678</p>
+                <p><i class="fas fa-envelope mr-2 text-lime-400"></i> info@fitnesscenter.com</p>
+            </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
+            <p>&copy; <span id="currentYear"></span> Fitness Center. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    // API Base URL (ensure this is consistent)
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // DOM Elements for header updates (from your existing script)
+    const userAuthSection = document.getElementById('userAuthSection');
+    const mobileAuthLinks = document.getElementById('mobileAuthLinks');
+
+    // DOM Elements for pricing plans on index.html
+    const pricingPlansContainer = document.getElementById('pricingPlansContainer');
+    const loadingIndexPlansMessage = document.getElementById('loadingIndexPlansMessage');
+
+    // --- Function to fetch and render plans on index.html ---
+    async function fetchAndDisplayHomepagePlans() {
+        if (!pricingPlansContainer) return;
+        if (loadingIndexPlansMessage) loadingIndexPlansMessage.style.display = 'block';
+        pricingPlansContainer.innerHTML = ''; // Clear any static content
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/plans`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch plans: ${response.statusText} (${response.status})`);
+            }
+            const allPlans = await response.json();
+            // Filter for active plans and maybe select a few to feature on the homepage
+            const activePlans = allPlans.filter(plan => plan.status && plan.status.toLowerCase() === 'active');
+
+            if (loadingIndexPlansMessage) loadingIndexPlansMessage.style.display = 'none';
+
+            if (activePlans.length === 0) {
+                pricingPlansContainer.innerHTML = '<p class="col-span-full text-center text-gray-500">No membership plans currently available. Please check back soon!</p>';
+                return;
+            }
+
+            // You might want to feature only a subset of plans on the homepage, e.g., the first 3 or specific ones
+            // For this example, I'll display up to 3. Adjust as needed.
+            const plansToDisplay = activePlans.slice(0, 3); // Display up to 3 plans
+
+            plansToDisplay.forEach(plan => {
+                const isPopular = plan.name.toLowerCase().includes("premium plus"); // Example: Mark 'Premium Plus' as popular
+                let cardClasses = "card bg-white p-8 border-2 border-transparent hover:border-lime-400 transition-all duration-300 flex flex-col justify-between";
+                let buttonClasses = "btn-secondary w-full mt-auto"; // Default button
+                let priceColor = "accent-text";
+                let popularBadgeHTML = "";
+
+                if (isPopular) {
+                    cardClasses = "card bg-lime-400 text-gray-900 p-8 relative transform sm:scale-105 shadow-2xl flex flex-col justify-between"; // Elevate popular plan
+                    buttonClasses = "btn-secondary w-full mt-auto bg-gray-900 text-white hover:bg-gray-700"; // Different button for popular
+                    priceColor = "text-gray-900";
+                    popularBadgeHTML = `<span class="absolute top-0 right-0 bg-gray-900 text-white text-xs font-semibold px-3 py-1 rounded-bl-lg">POPULAR</span>`;
+                }
+
+                const featuresArray = plan.description ? plan.description.split(',').map(f => f.trim()) : [];
+                let featuresHTML = featuresArray.map(feature => {
+                    let iconClass = `fas fa-check-circle mr-2 ${isPopular ? 'text-gray-700' : 'text-lime-500'}`;
+                    if (feature.toLowerCase().includes("not included") || feature.toLowerCase().includes("extra")) {
+                        iconClass = "fas fa-times-circle text-red-400 mr-2";
+                    }
+                    return `<li><i class="${iconClass}"></i>${feature}</li>`;
+                }).join('');
+
+                if (featuresArray.length === 0) {
+                    featuresHTML = `<li><i class="fas fa-info-circle ${isPopular ? 'text-gray-700' : 'text-gray-400'} mr-2"></i>Details available upon request.</li>`;
+                }
+
+                const planCardHTML = `
+                    <div class="${cardClasses}">
+                        ${popularBadgeHTML}
+                        <div>
+                            <h3 class="text-2xl font-bold ${isPopular ? 'text-gray-900' : 'text-gray-800'} mb-2">${plan.name}</h3>
+                            <p class="text-4xl font-extrabold ${priceColor} mb-4">Rs.${plan.price.toFixed(2)}<span class="text-lg ${isPopular ? 'text-gray-700' : 'text-gray-500'} font-medium">/${plan.duration || 'mo'}</span></p>
+                            <ul class="${isPopular ? 'text-gray-700' : 'text-gray-600'} space-y-2 mb-6 text-left min-h-[100px]">
+                                ${featuresHTML}
+                            </ul>
+                        </div>
+                        <a href="register.html?planId=${plan.id}" class="${buttonClasses}">Choose ${plan.name.split(' ')[0]}</a>
+                    </div>
+                `;
+                pricingPlansContainer.innerHTML += planCardHTML;
+            });
+
+        } catch (error) {
+            console.error('Error fetching or displaying homepage plans:', error);
+            if (loadingIndexPlansMessage) loadingIndexPlansMessage.style.display = 'none';
+            pricingPlansContainer.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load membership plans. ${error.message}</p>`;
+        }
+    }
+
+
+    // --- Header Authentication State Update (copied from your existing script) ---
+    function updateHeaderNav() {
+        const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const fullName = localStorage.getItem('fullName') || sessionStorage.getItem('fullName');
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+        let desktopNavHTML = '';
+        let mobileNavHTML = '';
+
+        if (authToken && fullName) {
+            const firstName = fullName.split(' ')[0];
+            const dashboardLink = userRole === 'ADMIN' ? 'admin/admin_dashboard.html' : 'member/member_dashboard.html';
+            desktopNavHTML = `
+                <div class="dropdown">
+                    <button class="profile-btn text-sm sm:text-base">
+                        Welcome, ${firstName}
+                        <i class="fas fa-caret-down ml-1"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="${dashboardLink}">My Dashboard</a>
+                        <a href="#" id="logoutButtonDesktop">Logout</a>
+                    </div>
+                </div>
+            `;
+            mobileNavHTML = `
+                <a href="${dashboardLink}" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">My Dashboard</a>
+                <a href="#" id="logoutButtonMobile" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Logout</a>
+            `;
+        } else {
+            desktopNavHTML = `
+                <a href="login.html" class="hidden sm:inline-block text-gray-700 hover:text-lime-500">Login</a>
+                <a href="register.html" class="btn-primary text-sm sm:text-base">Join Now</a>
+            `;
+            mobileNavHTML = `
+                <a href="login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-lime-100 rounded">Login</a>
+                <a href="register.html" class="block py-2 px-4 text-sm text-lime-600 bg-lime-100 hover:bg-lime-200 rounded font-semibold">Join Now</a>
+            `;
+        }
+
+        if (userAuthSection) userAuthSection.innerHTML = desktopNavHTML;
+        if (mobileAuthLinks) mobileAuthLinks.innerHTML = mobileNavHTML;
+
+        const logoutDesktop = document.getElementById('logoutButtonDesktop');
+        if (logoutDesktop) logoutDesktop.addEventListener('click', performLogout);
+        const logoutMobile = document.getElementById('logoutButtonMobile');
+        if (logoutMobile) logoutMobile.addEventListener('click', performLogout);
+    }
+
+    function performLogout(e) {
+        e.preventDefault();
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('memberId');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userRole');
+        sessionStorage.clear();
+        updateHeaderNav();
+        // No immediate redirect needed for index.html after logout unless desired
+    }
+
+    // --- Mobile Menu Toggle (copied) ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.setAttribute('aria-expanded', !isHidden);
+        });
+    }
+
+    // --- Smooth Scroll for Anchor Links (copied) ---
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenuButton.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    });
+
+    // --- Set Current Year in Footer (copied) ---
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+
+    // --- Initial Load Actions ---
+    window.addEventListener('DOMContentLoaded', () => {
+        updateHeaderNav(); // Update header based on login state first
+        fetchAndDisplayHomepagePlans(); // Then fetch and display dynamic plan data
+        // fetchFeaturedClasses(); // If you have this section
+    });
+</script>
+</body>
+</html>
