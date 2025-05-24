@@ -13,13 +13,13 @@ import org.springframework.context.annotation.Lazy;
 // To use @Scheduled, you would need:
 // import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.time.LocalDate;// Used to handle dates like issueDate, dueDate, paymentDate
+import java.time.format.DateTimeFormatter; // Used to format LocalDate to String and parse back
+import java.util.Comparator;// Used to sort collections like payment lists by custom rules
+import java.util.List;// Used to store collections of data like List<Payment>, List<Member>
+import java.util.Optional; // Used to safely handle values that might be null (e.g., findById)
+import java.util.UUID; //generates unique ID s
+import java.util.stream.Collectors; // Used to collect results from Stream operations
 
 @Service
 public class PaymentService {
