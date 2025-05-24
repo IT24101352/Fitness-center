@@ -17,7 +17,8 @@ import java.time.LocalDate;// Used to handle dates like issueDate, dueDate, paym
 import java.time.format.DateTimeFormatter; // Used to format LocalDate to String and parse back
 import java.util.Comparator;// Used to sort collections like payment lists by custom rules
 import java.util.List;// Used to store collections of data like List<Payment>, List<Member>
-import java.util.Optional; // Used to safely handle values that might be null (e.g., findById)
+import java.util.Optional; // Used to s
+// afely handle values that might be null (e.g., findById)
 import java.util.UUID; //generates unique ID s
 import java.util.stream.Collectors; // Used to collect results from Stream operations
 
@@ -35,7 +36,7 @@ public class PaymentService {
     public PaymentService(PaymentRepository paymentRepository,
                           MemberRepository memberRepository,
                           MembershipPlanRepository planRepository,
-                          @Lazy MemberService memberService) {
+                          @Lazy MemberService memberService) {// initialize a bean lazily,only when it is actually
         this.paymentRepository = paymentRepository;
         this.memberRepository = memberRepository;
         this.planRepository = planRepository;
