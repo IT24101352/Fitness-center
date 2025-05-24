@@ -100,7 +100,7 @@ public class MemberRepository {
         return value.replace("\"\"", "\"");
     }
 
-    public List<Member> findAll() {
+    public List<Member> findAll() { // read all members
         if (!Files.exists(filePath)) {
             System.out.println(FILE_NAME + " not found, returning empty list.");
             return new ArrayList<>();
@@ -116,7 +116,7 @@ public class MemberRepository {
         }
     }
 
-    public Optional<Member> findById(String id) {
+    public Optional<Member> findById(String id) {  // read member from its id
         return findAll().stream()
                 .filter(member -> member.getId().equals(id))
                 .findFirst();
@@ -128,7 +128,7 @@ public class MemberRepository {
                 .findFirst();
     }
 
-    public Member save(Member member) {
+    public Member save(Member member) { //create a list and store member objects
         List<Member> members = findAll();
         boolean updated = false;
         for (int i = 0; i < members.size(); i++) {
@@ -148,7 +148,7 @@ public class MemberRepository {
         return member;
     }
 
-    public boolean deleteById(String id) {
+    public boolean deleteById(String id) { //deleting a member by entering ID
         List<Member> members = findAll();
         boolean removed = members.removeIf(member -> member.getId().equals(id));
         if (removed) {

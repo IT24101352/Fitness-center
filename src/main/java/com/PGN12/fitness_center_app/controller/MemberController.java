@@ -28,18 +28,18 @@ public class MemberController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register") //Creating a member
     public ResponseEntity<?> createMember(@RequestBody Member member) {
         try {
             RegistrationResponse registrationResponse = memberService.createMemberAndInitialInvoice(member);
             return new ResponseEntity<>(registrationResponse, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) { //IllegalArgumentException extends RuntimeException
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (RuntimeException e) {
+        } catch (RuntimeException e) { //RuntimeException extends Exception
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        catch (Exception e) {
+        catch (Exception e) { //Exception extends Throwable
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred during registration.");
         }
@@ -84,19 +84,19 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Member>> getAllMembers() {
+    public ResponseEntity<List<Member>> getAllMembers() { //Read all member
         List<Member> members = memberService.getAllMembers();
         return ResponseEntity.ok(members);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Member> getMemberById(@PathVariable String id) {
+    public ResponseEntity<Member> getMemberById(@PathVariable String id) { //read singal member by id
         Optional<Member> member = memberService.getMemberById(id);
         return member.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") //updating the member
     public ResponseEntity<?> updateMember(@PathVariable String id, @RequestBody Member memberDetails) {
         try {
             Optional<Member> updatedMemberOpt = memberService.updateMember(id, memberDetails);
@@ -111,7 +111,7 @@ public class MemberController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") //delete member
     public ResponseEntity<?> deleteMember(@PathVariable String id) {
         boolean deleted = memberService.deleteMember(id);
         if (deleted) {
