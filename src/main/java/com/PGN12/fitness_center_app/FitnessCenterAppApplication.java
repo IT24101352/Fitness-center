@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Main entry point for the Fitness Center Spring Boot application.
  */
 @SpringBootApplication
-public class FitnessCenterAppApplication {
+public class
+FitnessCenterAppApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FitnessCenterAppApplication.class, args);
